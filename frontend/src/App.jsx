@@ -1,5 +1,6 @@
 import React from 'react';
 import Login from './Components/Login';
+import Navbar from './Components/Navbar';
 import { css, Global } from '@emotion/react';
 
 function App () {
@@ -14,6 +15,7 @@ function App () {
           `
         }
       />
+      <Navbar />
       <Login />
     </div>
   );
