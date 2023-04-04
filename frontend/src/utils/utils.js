@@ -11,3 +11,12 @@ export function validNotNull (value) {
   }
   return true
 }
+
+export function saveToken (token) {
+  localStorage.setItem('token', token)
+}
+
+export const HOST = 'http://localhost:5005'
+export const LOGIN_URL = '/admin/auth/login'
+export const REGISTER_URL = '/admin/auth/register'
+export const HEADER = { 'Content-Type': 'application/json' }

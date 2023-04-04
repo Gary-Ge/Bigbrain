@@ -7,7 +7,8 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Grid } from '@mui/material';
-import { validEmail, validNotNull } from '../utils/utils';
+import { validEmail, validNotNull, HOST, LOGIN_URL, saveToken, HEADER } from '../utils/utils';
+import { LoginDTO } from '../utils/entities';
 
 const theme = createTheme();
 
@@ -69,10 +70,21 @@ class Login extends React.Component {
       })
       return
     }
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    const dto = new LoginDTO(data.get('email'), data.get('password'))
+    console.log(dto)
+
+    fetch(`${HOST}${LOGIN_URL}`, {
+      method: 'POST',
+      body: JSON.stringify(dto),
+      headers: HEADER
+    }).then(res => res.json()).then(res => {
+      if (res.error != null) {
+        throw new Error(res.error)
+      }
+      saveToken(res.token)
+    }).catch(error => {
+      console.log(error.message)
+    })
   }
 
   render () {
@@ -93,7 +105,7 @@ class Login extends React.Component {
             alignItems: 'center',
             justifyContent: 'center'
           }}>
-            <Container component="main">
+            <Container component="main" maxWidth='xs'>
               <CssBaseline />
               <Box
                 sx={{
