@@ -102,6 +102,7 @@ export default function navbar () {
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', lg: 'flex' } }}>
             {pages.map((page) => (
+              <a href={`/${page}`} key={page} style= {{ textDecoration: 'none' }}>
               <Button
                 key={page}
                 onClick={handleCloseNavMenu}
@@ -109,6 +110,7 @@ export default function navbar () {
               >
                 {page}
               </Button>
+              </a>
             ))}
           </Box>
         </Toolbar>
