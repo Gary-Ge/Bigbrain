@@ -26,7 +26,6 @@ export default function navbar () {
   return (
     <AppBar position="static">
       <Container maxWidth="xl" sx={{
-        height: '7vh'
       }}>
         <Toolbar disableGutters>
           <Typography
@@ -36,7 +35,7 @@ export default function navbar () {
             href="/"
             sx={{
               pr: 70,
-              display: { xs: 'none', md: 'flex' },
+              display: { xs: 'none', lg: 'flex' },
               fontFamily: 'monospace',
               fontWeight: 700,
               letterSpacing: '.3rem',
@@ -47,7 +46,7 @@ export default function navbar () {
             Big Brain
           </Typography>
 
-          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
+          <Box sx={{ flexGrow: 1, display: { xs: 'flex', lg: 'none' } }}>
             <IconButton
               size="large"
               aria-label="account of current user"
@@ -73,7 +72,7 @@ export default function navbar () {
               open={Boolean(anchorElNav)}
               onClose={handleCloseNavMenu}
               sx={{
-                display: { xs: 'block', md: 'none' },
+                display: { xs: 'block', lg: 'none' },
               }}
             >
               {pages.map((page) => (
@@ -90,7 +89,7 @@ export default function navbar () {
             href=""
             sx={{
               mr: 6,
-              display: { xs: 'flex', md: 'none' },
+              display: { xs: 'flex', lg: 'none' },
               flexGrow: 1,
               fontFamily: 'monospace',
               fontWeight: 700,
@@ -101,7 +100,7 @@ export default function navbar () {
           >
             Big Brain
           </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+          <Box sx={{ flexGrow: 1, display: { xs: 'none', lg: 'flex' } }}>
             {pages.map((page) => (
               <Button
                 key={page}
