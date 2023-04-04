@@ -117,7 +117,7 @@ class Register extends React.Component {
           height: '93vh'
         }}>
           <Grid item xs={false} sm={false} md={7} sx={{
-            backgroundImage: 'url(assets/login-background.jpg)',
+            backgroundImage: 'url(assets/register-background.jpg)',
             backgroundRepeat: 'no-repeat',
             backgroundSize: 'cover',
             backgroundPosition: 'center'

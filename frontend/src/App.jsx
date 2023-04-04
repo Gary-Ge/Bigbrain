@@ -20,7 +20,7 @@ function App () {
       <Navbar />
       <BrowserRouter>
         <Routes>
-          <Route path='/' element={<Login />} />
+          <Route path='Login' element={<Login />} />
           <Route path='register' element={<Register />} />
         </Routes>
       </BrowserRouter>
