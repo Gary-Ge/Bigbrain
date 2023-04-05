@@ -1,9 +1,10 @@
 import React from 'react';
-import Navbar from './Components/Navbar';
 import { css, Global } from '@emotion/react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import Login from './Components/Login';
-import Register from './Components/Register'
+import Login from './Pages/Login';
+import Register from './Pages/Register'
+import Main from './Pages/Main';
+import Navbar from './Components/Navbar';
 
 function App () {
   return (
@@ -17,10 +18,10 @@ function App () {
           `
         }
       />
-      <Navbar />
       <BrowserRouter>
+        <Navbar />
         <Routes>
-          <Route path='/' element={<Login />} />
+          <Route path='/' element={<Main />} />
           <Route path='login' element={<Login />} />
           <Route path='register' element={<Register />} />
         </Routes>
