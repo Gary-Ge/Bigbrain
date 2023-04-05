@@ -10,6 +10,7 @@ import { Grid } from '@mui/material';
 import { validEmail, validNotNull, HOST, REGISTER_URL, saveToken, HEADER } from '../utils/utils';
 import { RegisterDTO } from '../utils/entities';
 import Link from '@mui/material/Link';
+import AlertDialog from './AlertDialog';
 
 const theme = createTheme();
 
@@ -22,12 +23,21 @@ class Register extends React.Component {
       validName: true,
       emailHelperText: '',
       passwordHelperText: '',
-      nameHelperText: ''
+      nameHelperText: '',
+      alertDialogOpen: false,
+      alertDialogContent: ''
     }
     this.checkEmail = this.checkEmail.bind(this)
     this.checkNotNullName = this.checkNotNullName.bind(this)
     this.checkNotNullPassword = this.checkNotNullPassword.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
+    this.onAlertDialogClose = this.onAlertDialogClose.bind(this)
+  }
+
+  onAlertDialogClose () {
+    this.setState({
+      alertDialogOpen: false
+    })
   }
 
   checkEmail (event) {
@@ -107,7 +117,10 @@ class Register extends React.Component {
       }
       saveToken(res.token)
     }).catch(error => {
-      console.log(error.message)
+      this.setState({
+        alertDialogOpen: true,
+        alertDialogContent: error.message
+      })
     })
   }
 
@@ -194,6 +207,11 @@ class Register extends React.Component {
             </Container>
           </Grid>
         </Grid>
+        <AlertDialog
+          open={this.state.alertDialogOpen}
+          onClose={this.onAlertDialogClose}
+          content={this.state.alertDialogContent}
+        ></AlertDialog>
       </ThemeProvider>
     )
   }
