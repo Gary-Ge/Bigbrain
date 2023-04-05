@@ -9,6 +9,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Grid } from '@mui/material';
 import { validEmail, validNotNull, HOST, LOGIN_URL, saveToken, HEADER } from '../utils/utils';
 import { LoginDTO } from '../utils/entities';
+import Link from '@mui/material/Link';
 
 const theme = createTheme();
 
@@ -126,7 +127,6 @@ class Login extends React.Component {
                     label="Email Address"
                     name="email"
                     autoComplete="email"
-                    autoFocus
                     onChange={this.checkEmail}
                     onBlur={this.checkEmail}
                     error={!this.state.validEmail}
@@ -154,6 +154,9 @@ class Login extends React.Component {
                   >
                     Sign In
                   </Button>
+                  <Link href='/register' sx={{
+                    float: 'right'
+                  }}>No account? Sign Up Now!</Link>
                 </Box>
               </Box>
             </Container>

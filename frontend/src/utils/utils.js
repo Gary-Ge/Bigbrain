@@ -16,6 +16,10 @@ export function saveToken (token) {
   localStorage.setItem('token', token)
 }
 
+export function removeToken () {
+  localStorage.removeItem('token')
+}
+
 export const HOST = 'http://localhost:5005'
 export const LOGIN_URL = '/admin/auth/login'
 export const REGISTER_URL = '/admin/auth/register'

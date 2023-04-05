@@ -9,6 +9,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Grid } from '@mui/material';
 import { validEmail, validNotNull, HOST, REGISTER_URL, saveToken, HEADER } from '../utils/utils';
 import { RegisterDTO } from '../utils/entities';
+import Link from '@mui/material/Link';
 
 const theme = createTheme();
 
@@ -138,7 +139,7 @@ class Register extends React.Component {
                 }}
               >
                 <Typography component="h1" variant="h5">
-                  Register
+                  Sign Up
                 </Typography>
                 <Box component="form" onSubmit={this.handleSubmit} noValidate sx={{ mt: 1 }}>
                   <TextField
@@ -153,7 +154,6 @@ class Register extends React.Component {
                     onBlur={this.checkNotNullName}
                     error={!this.state.validName}
                     helperText={this.state.nameHelperText}
-                    autoFocus
                   />
                   <TextField
                     margin="normal"
@@ -186,8 +186,9 @@ class Register extends React.Component {
                     variant="contained"
                     sx={{ mt: 3, mb: 2 }}
                   >
-                    Register
+                    Sign Up
                   </Button>
+                  <Link href='/login' sx={{ float: 'right' }}>Already have account? Go sign in!</Link>
                 </Box>
               </Box>
             </Container>
