@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
@@ -19,6 +19,17 @@ function Navbar () {
   const [anchorElNav, setAnchorElNav] = useState(null);
   const location = useLocation();
 
+  const navbarRef = useRef()
+
+  useEffect(() => {
+    if (navbarRef.current) {
+      document.documentElement.style.setProperty(
+        '--nav-h',
+        `${navbarRef.current.offsetHeight}px`
+      );
+    }
+  }, []);
+
   useEffect(() => {
     updateLoginStatus();
   }, [location]);
@@ -36,7 +47,7 @@ function Navbar () {
   }
 
   return (
-    <AppBar position="static">
+    <AppBar position="static" ref={navbarRef}>
       <Container maxWidth="xl" sx={{
       }}>
         <Toolbar disableGutters>

@@ -5,7 +5,7 @@ import CardMedia from '@mui/material/CardMedia';
 import CardActions from '@mui/material/CardActions'
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import { GET_GAME_URL, HEADER_AUTH, HOST } from '../utils/utils';
+import { GET_GAME_URL, getAuthHeader, HOST } from '../utils/utils';
 import AlertDialog from './AlertDialog';
 import { useState } from 'react';
 
@@ -20,7 +20,7 @@ export default function QuizCard ({ image, title, questionNumber, quizId, onDele
   const deleteQuiz = () => {
     fetch(`${HOST}${GET_GAME_URL}/${quizId}`, {
       method: 'DELETE',
-      headers: HEADER_AUTH
+      headers: getAuthHeader()
     }).then(res => res.json()).then(res => {
       if (res.error != null) {
         throw new Error(res.error)

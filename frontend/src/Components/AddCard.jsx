@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useState } from 'react';
-import { CREATE_GAME_URL, HEADER_AUTH, HOST, validNotNull } from '../utils/utils';
+import { CREATE_GAME_URL, getAuthHeader, HOST, validNotNull } from '../utils/utils';
 import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';
 import CardActionArea from '@mui/material/CardActionArea';
@@ -49,7 +49,7 @@ export default function AddCard ({ onSubmitSuccess }) {
     if (checkValidity()) {
       fetch(`${HOST}${CREATE_GAME_URL}`, {
         method: 'POST',
-        headers: HEADER_AUTH,
+        headers: getAuthHeader(),
         body: JSON.stringify({ name: gameName })
       }).then(res => res.json()).then(res => {
         if (res.error != null) {

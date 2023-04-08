@@ -132,7 +132,7 @@ class Register extends React.Component {
       : (
           <ThemeProvider theme={theme}>
             <Grid container sx={{
-              height: '93vh'
+              minHeight: 'calc(100vh - var(--nav-h))'
             }}>
               <Grid item xs={false} sm={false} md={7} sx={{
                 backgroundImage: 'url(assets/register-background.jpg)',
