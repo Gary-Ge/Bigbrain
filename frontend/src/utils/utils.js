@@ -27,4 +27,7 @@ export function getToken () {
 export const HOST = 'http://localhost:5005'
 export const LOGIN_URL = '/admin/auth/login'
 export const REGISTER_URL = '/admin/auth/register'
+export const CREATE_GAME_URL = '/admin/quiz/new'
+export const GET_GAME_URL = '/admin/quiz'
 export const HEADER = { 'Content-Type': 'application/json' }
+export const HEADER_AUTH = { 'Content-Type': 'application/json', Authorization: getToken() }
