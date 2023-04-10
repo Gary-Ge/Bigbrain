@@ -5,7 +5,7 @@ import Login from './Pages/Login';
 import Register from './Pages/Register'
 import Main from './Pages/Main';
 import NavbarWrapper from './Components/NavbarWrapper';
-import EditGame from './Components/Editgame';
+import EditGame from './Pages/GameEdit.jsx';
 
 function App () {
   return (
