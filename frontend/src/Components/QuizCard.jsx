@@ -8,14 +8,19 @@ import Typography from '@mui/material/Typography';
 import { GET_GAME_URL, getAuthHeader, HOST } from '../utils/utils';
 import AlertDialog from './AlertDialog';
 import { useState } from 'react';
-import Link from '@mui/material/Link';
 
 export default function QuizCard ({ image, title, questionNumber, quizId, onDeleteSuccess }) {
   const [alertDialogOpen, setAlertDialogOpen] = useState(false)
   const [alertDialogContent, setAlertDialogContent] = useState('')
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false)
+  const [confirmDialogContent, setConfirmDialogContent] = useState(false)
 
   const closeAlertDialog = () => {
     setAlertDialogOpen(false)
+  }
+
+  const closeConfirmDialog = () => {
+    setConfirmDialogOpen(false)
   }
 
   const deleteQuiz = () => {
@@ -31,6 +36,16 @@ export default function QuizCard ({ image, title, questionNumber, quizId, onDele
       setAlertDialogContent(error.message)
       setAlertDialogOpen(true)
     })
+  }
+
+  const onConfirmDialogConfirm = () => {
+    setConfirmDialogOpen(false)
+    deleteQuiz()
+  }
+
+  const openDeleteConfirmDialog = () => {
+    setConfirmDialogContent(`Are you sure you want to delete game "${title}" ?`)
+    setConfirmDialogOpen(true)
   }
 
   return (
@@ -51,7 +66,6 @@ export default function QuizCard ({ image, title, questionNumber, quizId, onDele
       <CardActions sx={{ pt: 0, pl: 0, pr: 0 }}>
       <Link href="/editgame" style={{ textDecoration: 'none' }} >
         <Button size='small'>Edit</Button>
-      </Link>
         <Button size='small' onClick={deleteQuiz}>Delete</Button>
       </CardActions>
       <AlertDialog
@@ -60,6 +74,13 @@ export default function QuizCard ({ image, title, questionNumber, quizId, onDele
         content={alertDialogContent}
       >
       </AlertDialog>
+      <ConfirmDialog
+        open={confirmDialogOpen}
+        onClose={closeConfirmDialog}
+        onConfirm={onConfirmDialogConfirm}
+        content={confirmDialogContent}
+      >
+      </ConfirmDialog>
     </Card>
   )
 }
