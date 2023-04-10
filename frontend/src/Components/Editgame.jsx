@@ -12,8 +12,89 @@ import InputAdornment from '@mui/material/InputAdornment';
 import ListItemText from '@mui/material/ListItemText';
 import Divider from '@mui/material/Divider';
 import ListItem from '@mui/material/ListItem';
+import SwipeableDrawer from '@mui/material/SwipeableDrawer';
+import Fab from '@mui/material/Fab';
+import AddIcon from '@mui/icons-material/Add';
 
 function EditGame () {
+  const [state, setState] = React.useState({
+    right: false,
+  });
+  const toggleDrawer = (anchor, open) => (event) => {
+    if (
+      event && event.target &&
+      event.type === 'keydown' &&
+      (event.key === 'Tab' || event.key === 'Shift')
+    ) {
+      return;
+    }
+
+    setState({ ...state, [anchor]: open });
+  };
+
+  const list = (anchor) => (
+    <Box
+      sx={{ width: 250 }}
+      role="presentation"
+    >
+      <Box
+      component="form"
+      sx={{
+        '& .MuiTextField-root': { m: 2, width: '25ch' },
+      }}
+      noValidate
+      autoComplete="off"
+    >
+      <div>
+        <TextField
+          id="outlined-select-currency"
+          select
+          label="Type"
+          defaultValue="EUR"
+          helperText="Please select your Question Type"
+          style={{ width: '22ch' }}
+        >
+          {type.map((option) => (
+            <MenuItem key={option.value} value={option.value}>
+              {option.label}
+            </MenuItem>
+          ))}
+        </TextField>
+        <TextField
+          id="outlined-select-currency"
+          select
+          label="Time"
+          defaultValue="EUR"
+          helperText="Please select your Limited Time"
+          style={{ width: '22ch' }}
+        >
+          {time.map((option) => (
+            <MenuItem key={option.value} value={option.value}>
+              {option.label}
+            </MenuItem>
+          ))}
+        </TextField>
+        <TextField
+          id="outlined-select-currency"
+          select
+          label="Points"
+          defaultValue="EUR"
+          helperText="Please select your Points"
+          style={{ width: '22ch' }}
+        >
+          {point.map((option) => (
+            <MenuItem key={option.value} value={option.value}>
+              {option.label}
+            </MenuItem>
+          ))}
+        </TextField>
+      </div>
+      <div style={{ display: 'flex', marginTop: '10%', alignItems: 'center', justifyContent: 'center' }}>
+      <Button variant="contained" color="success" size='large'>Finish</Button>
+      </div>
+    </Box>
+    </Box>
+  );
   const [isCheckedA, setIsCheckedA] = useState(false);
   const [isCheckedB, setIsCheckedB] = useState(false);
   const [isCheckedC, setIsCheckedC] = useState(false);
@@ -128,12 +209,11 @@ function EditGame () {
     setOptionD(event.target.value);
   };
   return (
-    <Grid container sx={{ height: '93vh' }}>
-  <Grid item xs={12} sm={6} md={3} lg={2} sx={{
-  }} >
+  <Grid container sx={{ height: '93vh' }} >
+  <Grid item xs={12} sm={4} md={3} lg={2} >
   {questions.map((question, index) => (
           <React.Fragment key={index}>
-          <ListItem button>
+          <ListItem>
         <ListItemText primary={question.title} />
         <Button variant='contained' color='error' onClick={() => deleteQuestion(index)} sx={{
           p: '0.3rem',
@@ -147,7 +227,7 @@ function EditGame () {
   <Button onClick={addQuestion} variant="contained" color="success" >Create</Button>
   </div>
   </Grid>
-  <Grid item xs={12} sm={6} md={6} lg={8} style={{ backgroundImage: 'url(assets/create-background.jpg)', backgroundSize: 'cover', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+  <Grid item xs={12} sm={8} md={9} lg={10} style={{ backgroundImage: 'url(assets/create-background.jpg)', backgroundSize: 'cover', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
   <div style= {{ width: '95%', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
     <FormControl fullWidth sx={{ m: 1, marginTop: '5%', backgroundColor: 'white', borderRadius: '10px' }}>
           <InputLabel sx={{ justifyContent: 'center' }} htmlFor="outlined-adornment-amount">Question</InputLabel>
@@ -258,65 +338,20 @@ function EditGame () {
     </Grid>
     </Grid>
     </Box>
-    </div>
-  </Grid>
-  <Grid item xs={12} sm={12} md={3} lg={2} style= {{ width: '95%', display: 'flex', marginTop: '2%' }}>
-  <Box
-      component="form"
-      sx={{
-        '& .MuiTextField-root': { m: 2, width: '25ch' },
-      }}
-      noValidate
-      autoComplete="off"
+    <div style= {{ marginRight: '-90%', marginTop: '10%' }} >
+    <Fab color="primary" aria-label="add" onClick={toggleDrawer('right', true)}>
+      <AddIcon />
+    </Fab>
+    <SwipeableDrawer
+      anchor="right"
+      open={state.right}
+      onClose={toggleDrawer('right', false)}
+      onOpen={toggleDrawer('right', true)}
     >
-      <div>
-        <TextField
-          id="outlined-select-currency"
-          select
-          label="Type"
-          defaultValue="EUR"
-          helperText="Please select your Question Type"
-          style={{ width: '22ch' }}
-        >
-          {type.map((option) => (
-            <MenuItem key={option.value} value={option.value}>
-              {option.label}
-            </MenuItem>
-          ))}
-        </TextField>
-        <TextField
-          id="outlined-select-currency"
-          select
-          label="Time"
-          defaultValue="EUR"
-          helperText="Please select your Limited Time"
-          style={{ width: '22ch' }}
-        >
-          {time.map((option) => (
-            <MenuItem key={option.value} value={option.value}>
-              {option.label}
-            </MenuItem>
-          ))}
-        </TextField>
-        <TextField
-          id="outlined-select-currency"
-          select
-          label="Points"
-          defaultValue="EUR"
-          helperText="Please select your Points"
-          style={{ width: '22ch' }}
-        >
-          {point.map((option) => (
-            <MenuItem key={option.value} value={option.value}>
-              {option.label}
-            </MenuItem>
-          ))}
-        </TextField>
-      </div>
-      <div style={{ display: 'flex', marginTop: '10%', alignItems: 'center', justifyContent: 'center' }}>
-      <Button variant="contained" color="success" size='large' >Finish</Button>
-      </div>
-    </Box>
+      {list('right')}
+    </SwipeableDrawer>
+  </div>
+    </div>
   </Grid>
 </Grid>
   )
