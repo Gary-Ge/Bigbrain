@@ -8,6 +8,7 @@ import Typography from '@mui/material/Typography';
 import { GET_GAME_URL, getAuthHeader, HOST } from '../utils/utils';
 import AlertDialog from './AlertDialog';
 import { useState } from 'react';
+import ConfirmDialog from './ConfirmDialog';
 
 export default function QuizCard ({ image, title, questionNumber, quizId, onDeleteSuccess }) {
   const [alertDialogOpen, setAlertDialogOpen] = useState(false)
@@ -64,9 +65,8 @@ export default function QuizCard ({ image, title, questionNumber, quizId, onDele
         </Typography>
       </CardContent>
       <CardActions sx={{ pt: 0, pl: 0, pr: 0 }}>
-      <Link href="/editgame" style={{ textDecoration: 'none' }} >
         <Button size='small'>Edit</Button>
-        <Button size='small' onClick={deleteQuiz}>Delete</Button>
+        <Button size='small' onClick={openDeleteConfirmDialog}>Delete</Button>
       </CardActions>
       <AlertDialog
         open={alertDialogOpen}
