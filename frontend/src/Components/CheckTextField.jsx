@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { TextField, InputAdornment, IconButton, Checkbox } from '@mui/material'
 
-export default function CheckTextField ({ label, required }) {
+export default function CheckTextField ({ label, required, value, onChange, onBlur }) {
   return (
     <TextField
       sx={{ width: '90%' }}
@@ -18,6 +18,9 @@ export default function CheckTextField ({ label, required }) {
           </InputAdornment>
         )
       }}
+      value={value}
+      onChange={onChange}
+      onBlur={onBlur}
     />
   )
 }

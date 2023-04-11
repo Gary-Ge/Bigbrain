@@ -33,20 +33,8 @@ export default function EditGame () {
     },
   }));
 
+  const [isMounted, setIsMounted] = useState(false)
   const [marginDrawOpen, setMarginDrawOpen] = useState(false)
-  const [questionState, setQuestionState] = useState({
-    title: '',
-    a: '',
-    b: '',
-    c: '',
-    d: '',
-    e: '',
-    f: '',
-    correct: [],
-    type: 'Single Choice',
-    duration: 30,
-    points: 10
-  })
   const [alertDialogState, setAlertDialogState] = useState({
     open: false,
     content: ''
@@ -59,13 +47,20 @@ export default function EditGame () {
     thumbnail: null,
     name: null
   })
-  const [isInitMount, setIsInitMount] = useState(true)
+  const [durationTextState, setDurationTextState] = useState({
+    error: false,
+    helperText: ''
+  })
+  const [pointsTextState, setPointsTextState] = useState({
+    error: false,
+    helperText: ''
+  })
 
   useEffect(() => {
-    if (isInitMount) {
-      setIsInitMount(false)
-    } else {
+    if (isMounted) {
       updateGame()
+    } else {
+      setIsMounted(true)
     }
   }, [questions])
 
@@ -91,6 +86,8 @@ export default function EditGame () {
     })
   }, [])
 
+  const [focusItem, setFocusItem] = useState(0)
+
   const onAlertDialogClose = () => {
     setAlertDialogState({ ...alertDialogState, open: false })
   }
@@ -104,11 +101,16 @@ export default function EditGame () {
   }
 
   const handleGameTypeSelectorChange = (event) => {
-    setQuestionState({ ...questionState, type: event.target.value })
+    const newQuestionLocal = [...questionsLocal]
+    newQuestionLocal[focusItem].type = event.target.value
+    setQuestionsLocal(newQuestionLocal)
+    saveQuestion()
   }
 
   const handleDurationChange = (event) => {
-    setQuestionState({ ...questionState, duration: event.target.value })
+    const newQuestionLocal = [...questionsLocal]
+    newQuestionLocal[focusItem].duration = event.target.value
+    setQuestionsLocal(newQuestionLocal)
   }
 
   const handleGameNameChange = (event) => {
@@ -116,7 +118,56 @@ export default function EditGame () {
   }
 
   const handlePointsChange = (event) => {
-    setQuestionState({ ...questionState, points: event.target.value })
+    const newQuestionLocal = [...questionsLocal]
+    newQuestionLocal[focusItem].points = event.target.value
+    setQuestionsLocal(newQuestionLocal)
+  }
+
+  const handleQuestionClick = (index) => {
+    setFocusItem(index)
+  }
+
+  const handleDeleteClick = (index) => {
+    console.log(index)
+  }
+
+  // Update Question Title
+  const handleQuestionTitleChange = (event) => {
+    const newQuestionLocal = [...questionsLocal]
+    newQuestionLocal[focusItem].title = event.target.value
+    setQuestionsLocal(newQuestionLocal)
+  }
+
+  // Update Question Answer
+  const handleQuestionAnswerAChange = (event) => {
+    const newQuestionLocal = [...questionsLocal]
+    newQuestionLocal[focusItem].a = event.target.value
+    setQuestionsLocal(newQuestionLocal)
+  }
+  const handleQuestionAnswerBChange = (event) => {
+    const newQuestionLocal = [...questionsLocal]
+    newQuestionLocal[focusItem].b = event.target.value
+    setQuestionsLocal(newQuestionLocal)
+  }
+  const handleQuestionAnswerCChange = (event) => {
+    const newQuestionLocal = [...questionsLocal]
+    newQuestionLocal[focusItem].c = event.target.value
+    setQuestionsLocal(newQuestionLocal)
+  }
+  const handleQuestionAnswerDChange = (event) => {
+    const newQuestionLocal = [...questionsLocal]
+    newQuestionLocal[focusItem].d = event.target.value
+    setQuestionsLocal(newQuestionLocal)
+  }
+  const handleQuestionAnswerEChange = (event) => {
+    const newQuestionLocal = [...questionsLocal]
+    newQuestionLocal[focusItem].e = event.target.value
+    setQuestionsLocal(newQuestionLocal)
+  }
+  const handleQuestionAnswerFChange = (event) => {
+    const newQuestionLocal = [...questionsLocal]
+    newQuestionLocal[focusItem].f = event.target.value
+    setQuestionsLocal(newQuestionLocal)
   }
 
   const createQuestion = () => {
@@ -137,6 +188,11 @@ export default function EditGame () {
     setQuestionsLocal([...questionsLocal, newQuestion])
   }
 
+  const saveQuestion = () => {
+    const newQuestions = [...questionsLocal]
+    setQuestions(newQuestions)
+  }
+
   const updateGame = () => {
     fetch(`${HOST}${GET_GAME_URL}/${quizId}`, {
       method: 'PUT',
@@ -154,6 +210,48 @@ export default function EditGame () {
     })
   }
 
+  const handleDurationBlur = () => {
+    const value = parseInt(questionsLocal[focusItem].duration)
+    const newQuestionLocal = [...questionsLocal]
+    if (isNaN(value)) {
+      newQuestionLocal[focusItem].duration = 30
+      setQuestionsLocal(newQuestionLocal)
+      setDurationTextState({
+        error: true,
+        helperText: 'Duration should be a number. Duration value has been set to the default value.'
+      })
+    } else {
+      newQuestionLocal[focusItem].duration = value
+      setQuestionsLocal(newQuestionLocal)
+      setDurationTextState({
+        error: false,
+        helperText: ''
+      })
+    }
+    saveQuestion()
+  }
+
+  const handlePointsBlur = () => {
+    const value = +(questionsLocal[focusItem].points)
+    const newQuestionLocal = [...questionsLocal]
+    if (isNaN(value)) {
+      newQuestionLocal[focusItem].points = 10
+      setQuestionsLocal(newQuestionLocal)
+      setPointsTextState({
+        error: true,
+        helperText: 'Points should be a number. Points value has been set to the last valid value.'
+      })
+    } else {
+      newQuestionLocal[focusItem].points = value
+      setQuestionsLocal(newQuestionLocal)
+      setPointsTextState({
+        error: false,
+        helperText: ''
+      })
+    }
+    saveQuestion()
+  }
+
   return (
     <>
       <Hidden mdUp>
@@ -169,7 +267,15 @@ export default function EditGame () {
                 }}
               >
                 {questionsLocal.map((question, index) => (
-                  <QuestionThumbnail key={index} text={question.title === '' || question.title == null ? `Question ${index + 1}` : question.title} width={100} height={60} />
+                  <QuestionThumbnail
+                    key={index}
+                    text={question.title === '' || question.title == null ? `Q${index + 1}` : question.title}
+                    width={100}
+                    height={60}
+                    onClick={() => handleQuestionClick(index)}
+                    focused={focusItem === index}
+                    onDeleteClick={handleDeleteClick}
+                  />
                 ))}
               </List>
               <Button
@@ -208,7 +314,14 @@ export default function EditGame () {
             }}
           >
             {questionsLocal.map((question, index) => (
-              <QuestionThumbnail key={index} text={question.title === '' || question.title == null ? `Question ${index + 1}` : question.title} width={'90%'} />
+              <QuestionThumbnail
+                key={index}
+                text={question.title === '' || question.title == null ? `Question ${index + 1}` : question.title}
+                width={'90%'}
+                onClick={() => handleQuestionClick(index)}
+                focused={focusItem === index}
+                onDeleteClick={handleDeleteClick}
+              />
             ))}
             <Button
               sx={{
@@ -263,6 +376,9 @@ export default function EditGame () {
             label='Question'
             fullWidth
             sx={{ maxWidth: 1400 }}
+            value={questionsLocal.length > 0 ? questionsLocal[focusItem].title : ''}
+            onChange={handleQuestionTitleChange}
+            onBlur={saveQuestion}
           />
           <Button sx={{ margin: 4 }} variant='contained'>
             Upload/Update Resource
@@ -270,22 +386,54 @@ export default function EditGame () {
           <ImageDisplay maxWidth={600} src={'/assets/test-thumbnail.jpg'} alt={'test'} />
           <Grid container mt={4} spacing={2} maxWidth={1400}>
             <Grid item xs={12} md={6} display={'flex'} alignItems='center' justifyContent={'center'}>
-              <CheckTextField label={'A (Required)'} required={true} />
+              <CheckTextField
+                label={'A (Required)'}
+                required={true}
+                value={questionsLocal.length > 0 ? questionsLocal[focusItem].a : ''}
+                onChange={handleQuestionAnswerAChange}
+                onBlur={saveQuestion}
+              />
             </Grid>
             <Grid item xs={12} md={6} display={'flex'} alignItems='center' justifyContent={'center'}>
-              <CheckTextField label={'B (Required)'} required={true} />
+              <CheckTextField
+                label={'B (Required)'}
+                required={true}
+                value={questionsLocal.length > 0 ? questionsLocal[focusItem].b : ''}
+                onChange={handleQuestionAnswerBChange}
+                onBlur={saveQuestion}
+              />
             </Grid>
             <Grid item xs={12} md={6} display={'flex'} alignItems='center' justifyContent={'center'}>
-              <CheckTextField label={'C'} />
+              <CheckTextField
+                label={'C'}
+                value={questionsLocal.length > 0 ? questionsLocal[focusItem].c : ''}
+                onChange={handleQuestionAnswerCChange}
+                onBlur={saveQuestion}
+              />
             </Grid>
             <Grid item xs={12} md={6} display={'flex'} alignItems='center' justifyContent={'center'}>
-              <CheckTextField label={'D'} />
+              <CheckTextField
+                label={'D'}
+                value={questionsLocal.length > 0 ? questionsLocal[focusItem].d : ''}
+                onChange={handleQuestionAnswerDChange}
+                onBlur={saveQuestion}
+              />
             </Grid>
             <Grid item xs={12} md={6} display={'flex'} alignItems='center' justifyContent={'center'}>
-              <CheckTextField label={'E'} />
+              <CheckTextField
+                label={'E'}
+                value={questionsLocal.length > 0 ? questionsLocal[focusItem].e : ''}
+                onChange={handleQuestionAnswerEChange}
+                onBlur={saveQuestion}
+              />
             </Grid>
             <Grid item xs={12} md={6} display={'flex'} alignItems='center' justifyContent={'center'}>
-              <CheckTextField label={'F'} />
+              <CheckTextField
+                label={'F'}
+                value={questionsLocal.length > 0 ? questionsLocal[focusItem].f : ''}
+                onChange={handleQuestionAnswerFChange}
+                onBlur={saveQuestion}
+              />
             </Grid>
           </Grid>
         </Grid>
@@ -330,6 +478,7 @@ export default function EditGame () {
               label='Game Name'
               value={gameState.name}
               onChange={handleGameNameChange}
+              onBlur={saveQuestion}
             >
             </TextField>
           </ListItem>
@@ -346,12 +495,12 @@ export default function EditGame () {
             <FormControl fullWidth>
               <InputLabel>Question Type</InputLabel>
               <Select
-                value={questionState.type}
+                value={questionsLocal.length > 0 ? questionsLocal[focusItem].type : ''}
                 label="Question Type"
                 onChange={handleGameTypeSelectorChange}
               >
                 <MenuItem value={'Single Choice'}>Single Choice</MenuItem>
-                <MenuItem value={'Multi Chouce'}>Multi Choice</MenuItem>
+                <MenuItem value={'Multi Choice'}>Multi Choice</MenuItem>
               </Select>
             </FormControl>
           </ListItem>
@@ -359,8 +508,10 @@ export default function EditGame () {
             <TextField
               fullWidth
               label='Duration (s)'
-              value={questionState.duration}
+              value={questionsLocal.length > 0 ? questionsLocal[focusItem].duration : 30}
               onChange={handleDurationChange}
+              onBlur={handleDurationBlur}
+              {...durationTextState}
             >
             </TextField>
           </ListItem>
@@ -368,8 +519,10 @@ export default function EditGame () {
             <TextField
               fullWidth
               label='Points'
-              value={questionState.points}
+              value={questionsLocal.length > 0 ? questionsLocal[focusItem].points : 10}
               onChange={handlePointsChange}
+              onBlur={handlePointsBlur}
+              {...pointsTextState}
             >
             </TextField>
           </ListItem>

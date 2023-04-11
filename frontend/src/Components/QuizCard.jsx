@@ -10,6 +10,7 @@ import AlertDialog from './AlertDialog';
 import { useState } from 'react';
 import ConfirmDialog from './ConfirmDialog';
 import { useNavigate } from 'react-router-dom';
+import { UpdateGameDTO } from '../utils/entities';
 
 export default function QuizCard ({ image, title, questionNumber, quizId, onDeleteSuccess }) {
   const navigate = useNavigate()
@@ -68,7 +69,55 @@ export default function QuizCard ({ image, title, questionNumber, quizId, onDele
   }
 
   const toEdit = () => {
-    navigate(`/editgame/${quizId}`)
+    fetch(`${HOST}${GET_GAME_URL}/${quizId}`, {
+      method: 'GET',
+      headers: getAuthHeader()
+    }).then(res => res.json()).then(res => {
+      if (res.error != null) {
+        throw new Error(res.error)
+      }
+      if (res.questions.length === 0) {
+        createFirstQuestion(res.name, res.thumbnail, () => { navigate(`/editgame/${quizId}`) })
+      } else {
+        navigate(`/editgame/${quizId}`)
+      }
+    }).catch(error => {
+      setAlertDialogOpen(true)
+      setAlertDialogContent(error.message)
+    })
+  }
+
+  const createFirstQuestion = (name, thumbnail, onSuccess) => {
+    const newQuestion = {
+      title: '',
+      a: '',
+      b: '',
+      c: '',
+      d: '',
+      e: '',
+      f: '',
+      correct: [],
+      type: 'Single Choice',
+      duration: 30,
+      points: 10
+    }
+    const questions = [newQuestion]
+    fetch(`${HOST}${GET_GAME_URL}/${quizId}`, {
+      method: 'PUT',
+      headers: getAuthHeader(),
+      body: JSON.stringify(new UpdateGameDTO(questions, {
+        thumbnail,
+        name
+      }))
+    }).then(res => res.json()).then(res => {
+      if (res.error != null) {
+        throw new Error(res.error)
+      }
+      onSuccess()
+    }).catch(error => {
+      setAlertDialogOpen(true)
+      setAlertDialogContent(error.message)
+    })
   }
 
   return (
@@ -89,7 +138,7 @@ export default function QuizCard ({ image, title, questionNumber, quizId, onDele
       <CardActions sx={{ pt: 0, pl: 0, pr: 0 }}>
         <Button size='small' onClick={toEdit}>Edit</Button>
         <Button size='small' onClick={openDeleteConfirmDialog}>Delete</Button>
-        <Button size='small' variant='contained' onClick={startQuiz} >Start</Button>
+        <Button size='small' onClick={startQuiz} >Start</Button>
       </CardActions>
       <AlertDialog
         open={alertDialogOpen}
