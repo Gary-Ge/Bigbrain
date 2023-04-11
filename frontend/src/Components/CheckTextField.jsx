@@ -1,11 +1,12 @@
 import * as React from 'react'
 import { TextField, InputAdornment, IconButton, Checkbox } from '@mui/material'
 
-export default function CheckTextField ({ label }) {
+export default function CheckTextField ({ label, required }) {
   return (
     <TextField
       sx={{ width: '90%' }}
       label={label}
+      required={required}
       InputProps={{
         startAdornment: (
           <InputAdornment position='start'>
