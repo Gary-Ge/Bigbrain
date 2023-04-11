@@ -42,6 +42,21 @@ export default function QuizCard ({ image, title, questionNumber, quizId, onDele
     })
   }
 
+  const startQuiz = () => {
+    fetch(`${HOST}${GET_GAME_URL}/${quizId}/start`, {
+      method: 'POST',
+      headers: getAuthHeader()
+    }).then(res => res.json()).then(res => {
+      if (res.error != null) {
+        throw new Error(res.error)
+      }
+      console.log('success')
+    }).catch(error => {
+      setAlertDialogContent(error.message)
+      setAlertDialogOpen(true)
+    })
+  }
+
   const onConfirmDialogConfirm = () => {
     setConfirmDialogOpen(false)
     deleteQuiz()
@@ -74,6 +89,7 @@ export default function QuizCard ({ image, title, questionNumber, quizId, onDele
       <CardActions sx={{ pt: 0, pl: 0, pr: 0 }}>
         <Button size='small' onClick={toEdit}>Edit</Button>
         <Button size='small' onClick={openDeleteConfirmDialog}>Delete</Button>
+        <Button size='small' variant='contained' onClick={startQuiz} >Start</Button>
       </CardActions>
       <AlertDialog
         open={alertDialogOpen}
