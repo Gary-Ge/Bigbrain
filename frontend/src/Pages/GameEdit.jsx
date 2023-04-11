@@ -1,11 +1,17 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Grid, TextField, Button, Hidden, AppBar, Toolbar, useTheme, useMediaQuery, List, Drawer, styled, Fab, ListItem, FormControl, InputLabel, Select, MenuItem, Typography, Divider } from '@mui/material';
 import ImageDisplay from '../Components/ImageDisplay';
 import CheckTextField from '../Components/CheckTextField';
 import QuestionThumbnail from '../Components/QuestionThumbnail';
 import { Add, ArrowBack } from '@mui/icons-material';
+import { useParams } from 'react-router-dom';
+import AlertDialog from '../Components/AlertDialog';
+import { GET_GAME_URL, HOST, getAuthHeader } from '../utils/utils';
+import { UpdateGameDTO } from '../utils/entities';
 
 export default function EditGame () {
+  const quizId = useParams().quizId
+
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
 
@@ -28,10 +34,66 @@ export default function EditGame () {
   }));
 
   const [marginDrawOpen, setMarginDrawOpen] = useState(false)
-  const [questionType, setQuestionType] = useState('Single Choice')
-  const [questionDuration, setQuestionDuration] = useState('30')
-  const [questionPoints, setQuestionPoints] = useState(10)
-  const [gameName, setGameName] = useState('Default Name')
+  const [questionState, setQuestionState] = useState({
+    title: '',
+    a: '',
+    b: '',
+    c: '',
+    d: '',
+    e: '',
+    f: '',
+    correct: [],
+    type: 'Single Choice',
+    duration: 30,
+    points: 10
+  })
+  const [alertDialogState, setAlertDialogState] = useState({
+    open: false,
+    content: ''
+  })
+
+  const [questions, setQuestions] = useState([])
+  const [questionsLocal, setQuestionsLocal] = useState([])
+
+  const [gameState, setGameState] = useState({
+    thumbnail: null,
+    name: null
+  })
+  const [isInitMount, setIsInitMount] = useState(true)
+
+  useEffect(() => {
+    if (isInitMount) {
+      setIsInitMount(false)
+    } else {
+      updateGame()
+    }
+  }, [questions])
+
+  useEffect(() => {
+    fetch(`${HOST}${GET_GAME_URL}/${quizId}`, {
+      method: 'GET',
+      headers: getAuthHeader()
+    }).then(res => res.json()).then(res => {
+      if (res.error != null) {
+        throw new Error(res.error)
+      }
+      setQuestions(res.questions)
+      setQuestionsLocal(res.questions)
+      setGameState({
+        thumbnail: res.thumbnail,
+        name: res.name
+      })
+    }).catch(error => {
+      setAlertDialogState({
+        open: true,
+        content: error.message
+      })
+    })
+  }, [])
+
+  const onAlertDialogClose = () => {
+    setAlertDialogState({ ...alertDialogState, open: false })
+  }
 
   const onMarginDrawClose = () => {
     setMarginDrawOpen(false)
@@ -42,19 +104,54 @@ export default function EditGame () {
   }
 
   const handleGameTypeSelectorChange = (event) => {
-    setQuestionType(event.target.value)
+    setQuestionState({ ...questionState, type: event.target.value })
   }
 
   const handleDurationChange = (event) => {
-    setQuestionDuration(event.target.value)
+    setQuestionState({ ...questionState, duration: event.target.value })
   }
 
   const handleGameNameChange = (event) => {
-    setGameName(event.target.value)
+    setGameState({ ...gameState, name: event.target.value })
   }
 
   const handlePointsChange = (event) => {
-    setQuestionPoints(event.target.value)
+    setQuestionState({ ...questionState, points: event.target.value })
+  }
+
+  const createQuestion = () => {
+    const newQuestion = {
+      title: '',
+      a: '',
+      b: '',
+      c: '',
+      d: '',
+      e: '',
+      f: '',
+      correct: [],
+      type: 'Single Choice',
+      duration: 30,
+      points: 10
+    }
+    setQuestions([...questions, newQuestion])
+    setQuestionsLocal([...questionsLocal, newQuestion])
+  }
+
+  const updateGame = () => {
+    fetch(`${HOST}${GET_GAME_URL}/${quizId}`, {
+      method: 'PUT',
+      headers: getAuthHeader(),
+      body: JSON.stringify(new UpdateGameDTO(questions, gameState))
+    }).then(res => res.json()).then(res => {
+      if (res.error != null) {
+        throw new Error(res.error)
+      }
+    }).catch(error => {
+      setAlertDialogState({
+        open: true,
+        content: error.message
+      })
+    })
   }
 
   return (
@@ -71,15 +168,19 @@ export default function EditGame () {
                   padding: 0
                 }}
               >
-                <QuestionThumbnail text={'Item 1'} width={100} height={60} />
+                {questionsLocal.map((question, index) => (
+                  <QuestionThumbnail key={index} text={question.title === '' || question.title == null ? `Question ${index + 1}` : question.title} width={100} height={60} />
+                ))}
               </List>
               <Button
                 sx={{
                   marginLeft: 1,
                   width: 50,
-                  height: 50
+                  height: 50,
+                  marginTop: 1
                 }}
                 variant='contained'
+                onClick={createQuestion}
               >
                 <Add />
               </Button>
@@ -106,8 +207,9 @@ export default function EditGame () {
               marginTop: 1
             }}
           >
-            <QuestionThumbnail text={'Item 1'} width={'90%'} />
-            <QuestionThumbnail text={'Item 1'} width={'90%'} />
+            {questionsLocal.map((question, index) => (
+              <QuestionThumbnail key={index} text={question.title === '' || question.title == null ? `Question ${index + 1}` : question.title} width={'90%'} />
+            ))}
             <Button
               sx={{
                 marginLeft: 1,
@@ -115,6 +217,7 @@ export default function EditGame () {
                 height: 50
               }}
               variant='contained'
+              onClick={createQuestion}
             >
               <Add />
             </Button>
@@ -164,7 +267,7 @@ export default function EditGame () {
           <Button sx={{ margin: 4 }} variant='contained'>
             Upload/Update Resource
           </Button>
-          <ImageDisplay maxWidth={600} src={'assets/test-thumbnail.jpg'} alt={'test'} />
+          <ImageDisplay maxWidth={600} src={'/assets/test-thumbnail.jpg'} alt={'test'} />
           <Grid container mt={4} spacing={2} maxWidth={1400}>
             <Grid item xs={12} md={6} display={'flex'} alignItems='center' justifyContent={'center'}>
               <CheckTextField label={'A (Required)'} required={true} />
@@ -225,13 +328,13 @@ export default function EditGame () {
             <TextField
               fullWidth
               label='Game Name'
-              value={gameName}
+              value={gameState.name}
               onChange={handleGameNameChange}
             >
             </TextField>
           </ListItem>
           <ListItem>
-            <ImageDisplay maxWidth={600} src={'assets/test-thumbnail.jpg'} alt={'test'} />
+            <ImageDisplay maxWidth={600} src={'/assets/test-thumbnail.jpg'} alt={'test'} />
           </ListItem>
           <ListItem>
             <Divider />
@@ -243,7 +346,7 @@ export default function EditGame () {
             <FormControl fullWidth>
               <InputLabel>Question Type</InputLabel>
               <Select
-                value={questionType}
+                value={questionState.type}
                 label="Question Type"
                 onChange={handleGameTypeSelectorChange}
               >
@@ -256,7 +359,7 @@ export default function EditGame () {
             <TextField
               fullWidth
               label='Duration (s)'
-              value={questionDuration}
+              value={questionState.duration}
               onChange={handleDurationChange}
             >
             </TextField>
@@ -265,7 +368,7 @@ export default function EditGame () {
             <TextField
               fullWidth
               label='Points'
-              value={questionPoints}
+              value={questionState.points}
               onChange={handlePointsChange}
             >
             </TextField>
@@ -283,6 +386,11 @@ export default function EditGame () {
           </ListItem>
         </List>
       </Drawer>
+      <AlertDialog
+        {...alertDialogState}
+        onClose={onAlertDialogClose}
+      >
+      </AlertDialog>
     </>
   );
 }

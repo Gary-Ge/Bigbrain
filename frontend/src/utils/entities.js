@@ -12,3 +12,11 @@ export class RegisterDTO {
     this.password = password
   }
 }
+
+export class UpdateGameDTO {
+  constructor (questions, gameState) {
+    this.questions = questions
+    this.name = gameState.name
+    this.thumbnail = gameState.thumbnail
+  }
+}

@@ -26,7 +26,7 @@ function App () {
             <Route path='login' element={<Login />} />
             <Route path='register' element={<Register />} />
             <Route path='dashboard' element={<Main />} />
-            <Route path='editgame' element={<EditGame />} />
+            <Route path='editgame/:quizId' element={<EditGame />} />
           </Routes>
         </NavbarWrapper>
       </BrowserRouter>

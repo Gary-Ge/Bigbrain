@@ -9,8 +9,11 @@ import { GET_GAME_URL, getAuthHeader, HOST } from '../utils/utils';
 import AlertDialog from './AlertDialog';
 import { useState } from 'react';
 import ConfirmDialog from './ConfirmDialog';
+import { useNavigate } from 'react-router-dom';
 
 export default function QuizCard ({ image, title, questionNumber, quizId, onDeleteSuccess }) {
+  const navigate = useNavigate()
+
   const [alertDialogOpen, setAlertDialogOpen] = useState(false)
   const [alertDialogContent, setAlertDialogContent] = useState('')
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false)
@@ -49,6 +52,10 @@ export default function QuizCard ({ image, title, questionNumber, quizId, onDele
     setConfirmDialogOpen(true)
   }
 
+  const toEdit = () => {
+    navigate(`/editgame/${quizId}`)
+  }
+
   return (
     <Card sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <CardMedia
@@ -65,7 +72,7 @@ export default function QuizCard ({ image, title, questionNumber, quizId, onDele
         </Typography>
       </CardContent>
       <CardActions sx={{ pt: 0, pl: 0, pr: 0 }}>
-        <Button size='small'>Edit</Button>
+        <Button size='small' onClick={toEdit}>Edit</Button>
         <Button size='small' onClick={openDeleteConfirmDialog}>Delete</Button>
       </CardActions>
       <AlertDialog

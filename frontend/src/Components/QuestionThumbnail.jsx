@@ -1,8 +1,8 @@
 import * as React from 'react'
-import { ListItem, IconButton } from '@mui/material'
+import { IconButton, ListItem } from '@mui/material'
 import { Cancel } from '@mui/icons-material';
 
-export default function QuestionThumbnail ({ text, width, height }) {
+export default function QuestionThumbnail ({ text, width, height, focused, onClick }) {
   return (
     <ListItem
       sx={{
@@ -13,10 +13,12 @@ export default function QuestionThumbnail ({ text, width, height }) {
         maxWidth: { width },
         height: { height },
         maxHeight: { height },
-        backgroundColor: 'white',
         margin: 1,
-        borderRadius: 1
+        borderRadius: 1,
+        backgroundColor: focused ? '#33bfff' : 'white'
       }}
+      button={true}
+      onClick={onClick}
     >
       {text}
       <IconButton
@@ -32,6 +34,7 @@ export default function QuestionThumbnail ({ text, width, height }) {
           width: 24,
           height: 24,
         }}
+        onClick={() => { console.log('bb') }}
       >
         <Cancel fontSize="inherit" />
       </IconButton>
