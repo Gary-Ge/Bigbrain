@@ -99,7 +99,8 @@ export default function QuizCard ({ image, title, questionNumber, quizId, onDele
       correct: [],
       type: 'Single Choice',
       duration: 30,
-      points: 10
+      points: 10,
+      resource: ''
     }
     const questions = [newQuestion]
     fetch(`${HOST}${GET_GAME_URL}/${quizId}`, {
