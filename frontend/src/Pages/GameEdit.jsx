@@ -128,7 +128,13 @@ export default function EditGame () {
   }
 
   const handleDeleteClick = (index) => {
-    console.log(index)
+    const newQuestionLocal = [...questionsLocal]
+    newQuestionLocal.splice(index, 1)
+    if (focusItem > newQuestionLocal.length - 1) {
+      setFocusItem(newQuestionLocal.length - 1)
+    }
+    setQuestionsLocal(newQuestionLocal)
+    setQuestions(newQuestionLocal)
   }
 
   // Update Question Title
@@ -274,7 +280,8 @@ export default function EditGame () {
                     height={60}
                     onClick={() => handleQuestionClick(index)}
                     focused={focusItem === index}
-                    onDeleteClick={handleDeleteClick}
+                    onDeleteClick={() => handleDeleteClick(index)}
+                    isDeletable={questionsLocal.length > 1}
                   />
                 ))}
               </List>
@@ -320,7 +327,8 @@ export default function EditGame () {
                 width={'90%'}
                 onClick={() => handleQuestionClick(index)}
                 focused={focusItem === index}
-                onDeleteClick={handleDeleteClick}
+                onDeleteClick={() => handleDeleteClick(index)}
+                isDeletable={questionsLocal.length > 1}
               />
             ))}
             <Button

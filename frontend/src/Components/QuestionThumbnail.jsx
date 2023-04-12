@@ -1,8 +1,19 @@
 import * as React from 'react'
+import { useState } from 'react';
 import { IconButton, ListItem, Typography } from '@mui/material'
 import { Cancel } from '@mui/icons-material';
 
-export default function QuestionThumbnail ({ text, width, height, focused, onClick, onDeleteClick }) {
+export default function QuestionThumbnail ({ text, width, height, focused, onClick, onDeleteClick, isDeletable }) {
+  const [isMouseOnIcon, setIsMouseOnIcon] = useState(false)
+
+  const setMouseOnIcon = () => {
+    setIsMouseOnIcon(true)
+  }
+
+  const setMouseNotOnIcon = () => {
+    setIsMouseOnIcon(false)
+  }
+
   return (
     <ListItem
       sx={{
@@ -17,7 +28,7 @@ export default function QuestionThumbnail ({ text, width, height, focused, onCli
         borderRadius: 1,
         backgroundColor: focused ? '#33bfff' : 'white'
       }}
-      button
+      button={!isMouseOnIcon}
       onClick={onClick}
     >
       <Typography
@@ -28,23 +39,29 @@ export default function QuestionThumbnail ({ text, width, height, focused, onCli
           maxWidth: '100%',
         }}
       >{text}</Typography>
-      <IconButton
-        aria-label="delete"
-        color='inherit'
-        sx={{
-          position: 'absolute',
-          top: -7,
-          right: -7,
-          backgroundColor: 'transparent',
-          color: 'red',
-          padding: 0,
-          width: 24,
-          height: 24,
-        }}
-        onClick={onDeleteClick}
-      >
-        <Cancel fontSize="inherit" />
-      </IconButton>
+      {isDeletable &&
+        <IconButton
+          aria-label="delete"
+          color='inherit'
+          sx={{
+            position: 'absolute',
+            top: -7,
+            right: -7,
+            backgroundColor: 'transparent',
+            color: 'red',
+            padding: 0,
+            width: 24,
+            height: 24,
+          }}
+          onClick={(event) => {
+            onDeleteClick()
+            event.stopPropagation()
+          }}
+          onMouseEnter={setMouseOnIcon}
+          onMouseLeave={setMouseNotOnIcon}
+        >
+          <Cancel fontSize="inherit" />
+        </IconButton>}
     </ListItem>
   )
 }
