@@ -126,7 +126,7 @@ function Navbar () {
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', lg: 'flex' } }}>
             {pages.map((page) => (
-              <Link href={page === 'Login' || page === 'Logout' ? 'login' : `/${page.toLowerCase()}`} key={page} style={{ textDecoration: 'none' }} onClick={page === 'Logout' ? removeToken : null}>
+              <Link href={page === 'Login' || page === 'Logout' ? 'login' : `/${page.toLowerCase()}`} key={page} sx={{ textDecoration: 'none' }} onClick={page === 'Logout' ? removeToken : null}>
                 <Button
                   key={page}
                   onClick={handleCloseNavMenu}

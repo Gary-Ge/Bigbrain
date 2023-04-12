@@ -1,24 +1,16 @@
 import React from 'react';
-import { css, Global } from '@emotion/react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Login from './Pages/Login';
 import Register from './Pages/Register'
 import Main from './Pages/Main';
 import NavbarWrapper from './Components/NavbarWrapper';
 import EditGame from './Pages/GameEdit.jsx';
+import { CssBaseline } from '@mui/material';
 
 function App () {
   return (
     <div>
-      <Global
-        styles={
-          css`
-            body {
-              margin: 0
-            }
-          `
-        }
-      />
+      <CssBaseline />
       <BrowserRouter>
         <NavbarWrapper>
           <Routes>

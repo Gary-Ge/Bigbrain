@@ -1,11 +1,30 @@
 import * as React from 'react';
 import { Box, Paper } from '@mui/material';
 
-export default function ImageDisplay ({ maxWidth, src, alt }) {
+export default function ImageDisplay ({ minWidth, maxWidth, src, alt }) {
   return (
-    <Box maxWidth={maxWidth} display="flex" justifyContent="center" alignItems="center">
-      <Paper elevation={3} style={{ maxWidth: '100%', maxHeight: '100%', overflow: 'hidden' }}>
-        <img src={src} alt={alt} style={{ width: '100%', height: 'auto' }} />
+    <Box
+      minWidth={minWidth}
+      maxWidth={maxWidth}
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      sx={{
+        cursor: 'auto'
+      }}
+    >
+      <Paper elevation={3} sx={{ width: '100%', height: '100%', overflow: 'hidden' }}>
+        <Box
+          component="img"
+          sx={{
+            width: '100%',
+            height: '100%',
+            minHeight: '100%',
+            objectFit: 'cover'
+          }}
+          alt={alt}
+          src={src}
+        />
       </Paper>
     </Box>
   )

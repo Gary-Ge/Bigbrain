@@ -28,6 +28,21 @@ export function getAuthHeader () {
   return { 'Content-Type': 'application/json', Authorization: getToken() }
 }
 
+export function fileToDataUrl (file) {
+  const validFileTypes = ['image/jpeg', 'image/png', 'image/jpg']
+  const valid = validFileTypes.find(type => type === file.type);
+  // Bad data, let's walk away.
+
+  const reader = new FileReader();
+  const dataUrlPromise = new Promise((resolve, reject) => {
+    if (!valid) reject(new Error('Provided file is not a png, jpg or jpeg image.'))
+    reader.onerror = reject;
+    reader.onload = () => resolve(reader.result);
+  });
+  reader.readAsDataURL(file);
+  return dataUrlPromise;
+}
+
 export const HOST = 'http://localhost:5005'
 export const LOGIN_URL = '/admin/auth/login'
 export const REGISTER_URL = '/admin/auth/register'

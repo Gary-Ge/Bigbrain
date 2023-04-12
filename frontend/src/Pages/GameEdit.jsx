@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { Grid, TextField, Button, Hidden, AppBar, Toolbar, useTheme, useMediaQuery, List, Drawer, styled, Fab, ListItem, FormControl, InputLabel, Select, MenuItem, Typography, Divider } from '@mui/material';
+import React, { useEffect, useState, useRef } from 'react';
+import { Grid, TextField, Button, Hidden, AppBar, Toolbar, useTheme, useMediaQuery, List, Drawer, styled, Fab, ListItem, FormControl, InputLabel, Select, MenuItem, Typography, Divider, Box, InputAdornment } from '@mui/material';
 import ImageDisplay from '../Components/ImageDisplay';
 import CheckTextField from '../Components/CheckTextField';
 import QuestionThumbnail from '../Components/QuestionThumbnail';
 import { Add, ArrowBack } from '@mui/icons-material';
 import { useParams } from 'react-router-dom';
 import AlertDialog from '../Components/AlertDialog';
-import { GET_GAME_URL, HOST, getAuthHeader } from '../utils/utils';
+import { GET_GAME_URL, HOST, getAuthHeader, fileToDataUrl } from '../utils/utils';
 import { UpdateGameDTO } from '../utils/entities';
 
 export default function EditGame () {
@@ -14,6 +14,8 @@ export default function EditGame () {
 
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
+
+  const resourceUploadRef = useRef(null)
 
   const MarginDrawer = styled(Drawer)(({ theme }) => ({
     '& .MuiDrawer-paper': {
@@ -55,6 +57,13 @@ export default function EditGame () {
     error: false,
     helperText: ''
   })
+  const [focusItem, setFocusItem] = useState(0)
+
+  const [resourceTextStatus, setResourceTextStatus] = useState({
+    resource: '',
+    error: false,
+    helperText: 'Paste youtube link here or upload image'
+  })
 
   useEffect(() => {
     if (isMounted) {
@@ -78,6 +87,7 @@ export default function EditGame () {
         thumbnail: res.thumbnail,
         name: res.name
       })
+      setResourceTextStatus({ ...resourceTextStatus, resource: res.questions[0].resource.startsWith('https://') ? res.questions[0].resource : '' })
     }).catch(error => {
       setAlertDialogState({
         open: true,
@@ -85,8 +95,6 @@ export default function EditGame () {
       })
     })
   }, [])
-
-  const [focusItem, setFocusItem] = useState(0)
 
   const onAlertDialogClose = () => {
     setAlertDialogState({ ...alertDialogState, open: false })
@@ -100,21 +108,17 @@ export default function EditGame () {
     setMarginDrawOpen(true)
   }
 
+  // Update game meta data
+  const handleGameNameChange = (event) => {
+    setGameState({ ...gameState, name: event.target.value })
+  }
+
+  // Update question meta data
   const handleGameTypeSelectorChange = (event) => {
     const newQuestionLocal = [...questionsLocal]
     newQuestionLocal[focusItem].type = event.target.value
     setQuestionsLocal(newQuestionLocal)
     saveQuestion()
-  }
-
-  const handleDurationChange = (event) => {
-    const newQuestionLocal = [...questionsLocal]
-    newQuestionLocal[focusItem].duration = event.target.value
-    setQuestionsLocal(newQuestionLocal)
-  }
-
-  const handleGameNameChange = (event) => {
-    setGameState({ ...gameState, name: event.target.value })
   }
 
   const handlePointsChange = (event) => {
@@ -123,8 +127,16 @@ export default function EditGame () {
     setQuestionsLocal(newQuestionLocal)
   }
 
+  const handleDurationChange = (event) => {
+    const newQuestionLocal = [...questionsLocal]
+    newQuestionLocal[focusItem].duration = event.target.value
+    setQuestionsLocal(newQuestionLocal)
+  }
+
+  // Select question and delete question
   const handleQuestionClick = (index) => {
     setFocusItem(index)
+    setResourceTextStatus({ ...resourceTextStatus, resource: questionsLocal[index].resource.startsWith('https://') ? questionsLocal[index].resource : '' })
   }
 
   const handleDeleteClick = (index) => {
@@ -132,6 +144,9 @@ export default function EditGame () {
     newQuestionLocal.splice(index, 1)
     if (focusItem > newQuestionLocal.length - 1) {
       setFocusItem(newQuestionLocal.length - 1)
+      setResourceTextStatus({ ...resourceTextStatus, resource: newQuestionLocal[newQuestionLocal.length - 1].resource.startsWith('https://') ? newQuestionLocal[newQuestionLocal.length - 1].resource : '' })
+    } else {
+      setResourceTextStatus({ ...resourceTextStatus, resource: newQuestionLocal[focusItem].resource.startsWith('https://') ? newQuestionLocal[focusItem].resource : '' })
     }
     setQuestionsLocal(newQuestionLocal)
     setQuestions(newQuestionLocal)
@@ -176,6 +191,7 @@ export default function EditGame () {
     setQuestionsLocal(newQuestionLocal)
   }
 
+  // Create question
   const createQuestion = () => {
     const newQuestion = {
       title: '',
@@ -188,7 +204,8 @@ export default function EditGame () {
       correct: [],
       type: 'Single Choice',
       duration: 30,
-      points: 10
+      points: 10,
+      resource: ''
     }
     setQuestions([...questions, newQuestion])
     setQuestionsLocal([...questionsLocal, newQuestion])
@@ -216,6 +233,7 @@ export default function EditGame () {
     })
   }
 
+  // Update question meta data
   const handleDurationBlur = () => {
     const value = parseInt(questionsLocal[focusItem].duration)
     const newQuestionLocal = [...questionsLocal]
@@ -256,6 +274,62 @@ export default function EditGame () {
       })
     }
     saveQuestion()
+  }
+
+  // Update resource
+  const getResource = (resource) => {
+    if (resource == null || resource === '') {
+      return '/assets/no-resource.svg'
+    } else if (resource.startsWith('data:image')) {
+      return resource
+    } else {
+      return '/assets/video.svg'
+    }
+  }
+
+  const onResourceInputChange = (event) => {
+    setResourceTextStatus({ ...resourceTextStatus, resource: event.target.value })
+  }
+
+  const onResourceInputBlur = () => {
+    if (resourceTextStatus.resource.startsWith('https://www.youtube.com/') || resourceTextStatus.resource.startsWith('https://youtu.be/')) {
+      setResourceTextStatus({ ...resourceTextStatus, error: false, helperText: 'Paste youtube link here or upload image' })
+      const newQuestionLocal = [...questionsLocal]
+      newQuestionLocal[focusItem].resource = resourceTextStatus.resource
+      setQuestionsLocal(newQuestionLocal)
+      setQuestions(newQuestionLocal)
+    } else if (resourceTextStatus.resource === '') {
+      setResourceTextStatus({ ...resourceTextStatus, error: false, helperText: 'Paste youtube link here or upload image' })
+    } else {
+      setResourceTextStatus({ ...resourceTextStatus, error: true, helperText: 'The input link is not a valid youtube link' })
+    }
+  }
+
+  const onClearResource = () => {
+    const newQuestionLocal = [...questionsLocal]
+    newQuestionLocal[focusItem].resource = ''
+    setQuestionsLocal(newQuestionLocal)
+    setQuestions(newQuestionLocal)
+    setResourceTextStatus({ ...resourceTextStatus, resource: '' })
+  }
+
+  const openFileUploader = () => {
+    resourceUploadRef.current.click()
+  }
+
+  const onUploadFileChange = (event) => {
+    const file = event.target.files[0]
+    if (file == null) return
+    fileToDataUrl(file).then(res => {
+      setResourceTextStatus({ resource: '', error: false, helperText: 'Paste youtube link here or upload image' })
+      const newQuestionLocal = [...questionsLocal]
+      newQuestionLocal[focusItem].resource = res
+      setQuestionsLocal(newQuestionLocal)
+      setQuestions(newQuestionLocal)
+    }).catch(error => {
+      setResourceTextStatus({ resource: '', error: true, helperText: error.message })
+    })
+    event.target.value = ''
   }
 
   return (
@@ -388,10 +462,39 @@ export default function EditGame () {
             onChange={handleQuestionTitleChange}
             onBlur={saveQuestion}
           />
-          <Button sx={{ margin: 4 }} variant='contained'>
-            Upload/Update Resource
-          </Button>
-          <ImageDisplay maxWidth={600} src={'/assets/test-thumbnail.jpg'} alt={'test'} />
+          <Box
+            sx={{ width: '90%' }}
+            mt={4}
+            mb={2}
+          >
+            <Box sx={{ display: 'none' }}>
+              <input
+                type='file'
+                ref={resourceUploadRef}
+                onChange={onUploadFileChange}
+              />
+            </Box>
+            <TextField
+              label={'Resource'}
+              fullWidth
+              size='small'
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position='end'>
+                    <Button size='small' onClick={onClearResource}>Clear</Button>
+                    <Button size='small' onClick={openFileUploader}>Upload</Button>
+                  </InputAdornment>
+                )
+              }}
+              value={resourceTextStatus.resource}
+              onChange={onResourceInputChange}
+              onBlur={onResourceInputBlur}
+              error={resourceTextStatus.error}
+              helperText={resourceTextStatus.helperText}
+            >
+            </TextField>
+          </Box>
+          <ImageDisplay minWidth={240} maxWidth={600} src={questionsLocal.length > 0 ? getResource(questionsLocal[focusItem].resource) : '/assets/no-resource.svg'} alt={'test'} />
           <Grid container mt={4} spacing={2} maxWidth={1400}>
             <Grid item xs={12} md={6} display={'flex'} alignItems='center' justifyContent={'center'}>
               <CheckTextField
@@ -491,7 +594,7 @@ export default function EditGame () {
             </TextField>
           </ListItem>
           <ListItem>
-            <ImageDisplay maxWidth={600} src={'/assets/test-thumbnail.jpg'} alt={'test'} />
+            <ImageDisplay minWidth={217} maxWidth={217} src={'/assets/no-resource.svg'} alt={'test'} />
           </ListItem>
           <ListItem>
             <Divider />
