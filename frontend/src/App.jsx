@@ -6,6 +6,7 @@ import Main from './Pages/Main';
 import NavbarWrapper from './Components/NavbarWrapper';
 import EditGame from './Pages/GameEdit.jsx';
 import { CssBaseline } from '@mui/material';
+import GameResult from './Pages/GameResult.jsx';
 
 function App () {
   return (
@@ -19,6 +20,7 @@ function App () {
             <Route path='register' element={<Register />} />
             <Route path='dashboard' element={<Main />} />
             <Route path='editgame/:quizId' element={<EditGame />} />
+            <Route path='gameresult' element={<GameResult />} />
           </Routes>
         </NavbarWrapper>
       </BrowserRouter>
