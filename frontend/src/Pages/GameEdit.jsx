@@ -117,8 +117,9 @@ export default function EditGame () {
   const handleGameTypeSelectorChange = (event) => {
     const newQuestionLocal = [...questionsLocal]
     newQuestionLocal[focusItem].type = event.target.value
+    newQuestionLocal[focusItem].correct = newQuestionLocal[focusItem].correct.length === 0 ? [] : [newQuestionLocal[focusItem].correct[0]]
     setQuestionsLocal(newQuestionLocal)
-    saveQuestion()
+    setQuestions(newQuestionLocal)
   }
 
   const handlePointsChange = (event) => {
@@ -159,7 +160,7 @@ export default function EditGame () {
     setQuestionsLocal(newQuestionLocal)
   }
 
-  // Update Question Answer
+  // Update Question Answer Content
   const handleQuestionAnswerAChange = (event) => {
     const newQuestionLocal = [...questionsLocal]
     newQuestionLocal[focusItem].a = event.target.value
@@ -189,6 +190,35 @@ export default function EditGame () {
     const newQuestionLocal = [...questionsLocal]
     newQuestionLocal[focusItem].f = event.target.value
     setQuestionsLocal(newQuestionLocal)
+  }
+
+  // Update Correct Answer
+  const handleQuestionCheckChange = (event) => {
+    const name = event.target.name
+    const newQuestionLocal = [...questionsLocal]
+    if (event.target.checked) {
+      if (questionsLocal[focusItem].type === 'Single Choice') {
+        newQuestionLocal[focusItem].correct = [name]
+        setQuestionsLocal(newQuestionLocal)
+        setQuestions(newQuestionLocal)
+      } else {
+        newQuestionLocal[focusItem].correct = [...newQuestionLocal[focusItem].correct, name]
+        setQuestionsLocal(newQuestionLocal)
+        setQuestions(newQuestionLocal)
+      }
+    } else {
+      if (questionsLocal[focusItem].type === 'Single Choice') {
+        newQuestionLocal[focusItem].correct = []
+        setQuestionsLocal(newQuestionLocal)
+        setQuestions(newQuestionLocal)
+      } else {
+        const newCorrect = [...newQuestionLocal[focusItem].correct]
+        newCorrect.splice(newCorrect.indexOf(name), 1)
+        newQuestionLocal[focusItem].correct = newCorrect
+        setQuestionsLocal(newQuestionLocal)
+        setQuestions(newQuestionLocal)
+      }
+    }
   }
 
   // Create question
@@ -330,6 +360,12 @@ export default function EditGame () {
       setResourceTextStatus({ resource: '', error: true, helperText: error.message })
     })
     event.target.value = ''
+  }
+
+  const onClickResource = () => {
+    if (questionsLocal[focusItem].resource.startsWith('https://')) {
+      window.open(questionsLocal[focusItem].resource)
+    }
   }
 
   return (
@@ -494,7 +530,13 @@ export default function EditGame () {
             >
             </TextField>
           </Box>
-          <ImageDisplay minWidth={240} maxWidth={600} src={questionsLocal.length > 0 ? getResource(questionsLocal[focusItem].resource) : '/assets/no-resource.svg'} alt={'test'} />
+          <ImageDisplay
+            minWidth={240}
+            maxWidth={600}
+            src={questionsLocal.length > 0 ? getResource(questionsLocal[focusItem].resource) : '/assets/no-resource.svg'}
+            alt={'test'}
+            onClick={onClickResource}
+          />
           <Grid container mt={4} spacing={2} maxWidth={1400}>
             <Grid item xs={12} md={6} display={'flex'} alignItems='center' justifyContent={'center'}>
               <CheckTextField
@@ -503,6 +545,9 @@ export default function EditGame () {
                 value={questionsLocal.length > 0 ? questionsLocal[focusItem].a : ''}
                 onChange={handleQuestionAnswerAChange}
                 onBlur={saveQuestion}
+                name={'A'}
+                onCheckBoxChange={handleQuestionCheckChange}
+                checked={questionsLocal.length > 0 ? questionsLocal[focusItem].correct.includes('A') : false}
               />
             </Grid>
             <Grid item xs={12} md={6} display={'flex'} alignItems='center' justifyContent={'center'}>
@@ -512,6 +557,9 @@ export default function EditGame () {
                 value={questionsLocal.length > 0 ? questionsLocal[focusItem].b : ''}
                 onChange={handleQuestionAnswerBChange}
                 onBlur={saveQuestion}
+                name={'B'}
+                onCheckBoxChange={handleQuestionCheckChange}
+                checked={questionsLocal.length > 0 ? questionsLocal[focusItem].correct.includes('B') : false}
               />
             </Grid>
             <Grid item xs={12} md={6} display={'flex'} alignItems='center' justifyContent={'center'}>
@@ -520,6 +568,9 @@ export default function EditGame () {
                 value={questionsLocal.length > 0 ? questionsLocal[focusItem].c : ''}
                 onChange={handleQuestionAnswerCChange}
                 onBlur={saveQuestion}
+                name={'C'}
+                onCheckBoxChange={handleQuestionCheckChange}
+                checked={questionsLocal.length > 0 ? questionsLocal[focusItem].correct.includes('C') : false}
               />
             </Grid>
             <Grid item xs={12} md={6} display={'flex'} alignItems='center' justifyContent={'center'}>
@@ -528,6 +579,9 @@ export default function EditGame () {
                 value={questionsLocal.length > 0 ? questionsLocal[focusItem].d : ''}
                 onChange={handleQuestionAnswerDChange}
                 onBlur={saveQuestion}
+                name={'D'}
+                onCheckBoxChange={handleQuestionCheckChange}
+                checked={questionsLocal.length > 0 ? questionsLocal[focusItem].correct.includes('D') : false}
               />
             </Grid>
             <Grid item xs={12} md={6} display={'flex'} alignItems='center' justifyContent={'center'}>
@@ -536,6 +590,9 @@ export default function EditGame () {
                 value={questionsLocal.length > 0 ? questionsLocal[focusItem].e : ''}
                 onChange={handleQuestionAnswerEChange}
                 onBlur={saveQuestion}
+                name={'E'}
+                onCheckBoxChange={handleQuestionCheckChange}
+                checked={questionsLocal.length > 0 ? questionsLocal[focusItem].correct.includes('E') : false}
               />
             </Grid>
             <Grid item xs={12} md={6} display={'flex'} alignItems='center' justifyContent={'center'}>
@@ -544,6 +601,9 @@ export default function EditGame () {
                 value={questionsLocal.length > 0 ? questionsLocal[focusItem].f : ''}
                 onChange={handleQuestionAnswerFChange}
                 onBlur={saveQuestion}
+                name={'F'}
+                onCheckBoxChange={handleQuestionCheckChange}
+                checked={questionsLocal.length > 0 ? questionsLocal[focusItem].correct.includes('F') : false}
               />
             </Grid>
           </Grid>

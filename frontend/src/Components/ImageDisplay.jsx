@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Box, Paper } from '@mui/material';
 
-export default function ImageDisplay ({ minWidth, maxWidth, src, alt }) {
+export default function ImageDisplay ({ minWidth, maxWidth, src, alt, onClick }) {
   return (
     <Box
       minWidth={minWidth}
@@ -10,8 +10,9 @@ export default function ImageDisplay ({ minWidth, maxWidth, src, alt }) {
       justifyContent="center"
       alignItems="center"
       sx={{
-        cursor: 'auto'
+        cursor: 'pointer'
       }}
+      onClick={onClick}
     >
       <Paper elevation={3} sx={{ width: '100%', height: '100%', overflow: 'hidden' }}>
         <Box
