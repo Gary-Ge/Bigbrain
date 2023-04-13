@@ -4,13 +4,15 @@ import ImageDisplay from '../Components/ImageDisplay';
 import CheckTextField from '../Components/CheckTextField';
 import QuestionThumbnail from '../Components/QuestionThumbnail';
 import { Add, ArrowBack } from '@mui/icons-material';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import AlertDialog from '../Components/AlertDialog';
-import { GET_GAME_URL, HOST, getAuthHeader, fileToDataUrl } from '../utils/utils';
+import { GET_GAME_URL, HOST, getAuthHeader, fileToDataUrl, checkValidQuiz } from '../utils/utils';
 import { UpdateGameDTO } from '../utils/entities';
+import ConfirmDialog from '../Components/ConfirmDialog';
 
 export default function EditGame () {
   const quizId = useParams().quizId
+  const navigate = useNavigate()
 
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
@@ -40,6 +42,10 @@ export default function EditGame () {
   const [alertDialogState, setAlertDialogState] = useState({
     open: false,
     content: ''
+  })
+  const [confirmDialogState, setConfirmDialogState] = useState({
+    open: false,
+    content: 'This game is not able to be started because you have at least one required field incomplete.\n Note that Each question requires a title, at least two options (A and B) and at least one correct answer. In addition, please fill in the options in order, for example, you cannot only fill in option D and leave option C blank.\n Of course, we\'ve saved everything you\'ve filled in, so you can quit editing now and come back later to refine it.\n Are you sure you want to finish editing?'
   })
 
   const [questions, setQuestions] = useState([])
@@ -164,31 +170,37 @@ export default function EditGame () {
   const handleQuestionAnswerAChange = (event) => {
     const newQuestionLocal = [...questionsLocal]
     newQuestionLocal[focusItem].a = event.target.value
+    if (event.target.value === '') newQuestionLocal[focusItem].correct.splice(newQuestionLocal[focusItem].correct.indexOf('A'), 1)
     setQuestionsLocal(newQuestionLocal)
   }
   const handleQuestionAnswerBChange = (event) => {
     const newQuestionLocal = [...questionsLocal]
     newQuestionLocal[focusItem].b = event.target.value
+    if (event.target.value === '') newQuestionLocal[focusItem].correct.splice(newQuestionLocal[focusItem].correct.indexOf('B'), 1)
     setQuestionsLocal(newQuestionLocal)
   }
   const handleQuestionAnswerCChange = (event) => {
     const newQuestionLocal = [...questionsLocal]
     newQuestionLocal[focusItem].c = event.target.value
+    if (event.target.value === '') newQuestionLocal[focusItem].correct.splice(newQuestionLocal[focusItem].correct.indexOf('C'), 1)
     setQuestionsLocal(newQuestionLocal)
   }
   const handleQuestionAnswerDChange = (event) => {
     const newQuestionLocal = [...questionsLocal]
     newQuestionLocal[focusItem].d = event.target.value
+    if (event.target.value === '') newQuestionLocal[focusItem].correct.splice(newQuestionLocal[focusItem].correct.indexOf('D'), 1)
     setQuestionsLocal(newQuestionLocal)
   }
   const handleQuestionAnswerEChange = (event) => {
     const newQuestionLocal = [...questionsLocal]
     newQuestionLocal[focusItem].e = event.target.value
+    if (event.target.value === '') newQuestionLocal[focusItem].correct.splice(newQuestionLocal[focusItem].correct.indexOf('E'), 1)
     setQuestionsLocal(newQuestionLocal)
   }
   const handleQuestionAnswerFChange = (event) => {
     const newQuestionLocal = [...questionsLocal]
     newQuestionLocal[focusItem].f = event.target.value
+    if (event.target.value === '') newQuestionLocal[focusItem].correct.splice(newQuestionLocal[focusItem].correct.indexOf('F'), 1)
     setQuestionsLocal(newQuestionLocal)
   }
 
@@ -274,6 +286,13 @@ export default function EditGame () {
         error: true,
         helperText: 'Duration should be a number. Duration value has been set to the default value.'
       })
+    } else if (value < 15) {
+      newQuestionLocal[focusItem].duration = 30
+      setQuestionsLocal(newQuestionLocal)
+      setDurationTextState({
+        error: true,
+        helperText: 'Duration should at least be 15 seconds. Duration value has been set to the default value.'
+      })
     } else {
       newQuestionLocal[focusItem].duration = value
       setQuestionsLocal(newQuestionLocal)
@@ -294,6 +313,13 @@ export default function EditGame () {
       setPointsTextState({
         error: true,
         helperText: 'Points should be a number. Points value has been set to the last valid value.'
+      })
+    } else if (value < 0.1) {
+      newQuestionLocal[focusItem].points = 10
+      setQuestionsLocal(newQuestionLocal)
+      setPointsTextState({
+        error: true,
+        helperText: 'Points should at least be 0.1. Points value has been set to the last valid value.'
       })
     } else {
       newQuestionLocal[focusItem].points = value
@@ -366,6 +392,19 @@ export default function EditGame () {
     if (questionsLocal[focusItem].resource.startsWith('https://')) {
       window.open(questionsLocal[focusItem].resource)
     }
+  }
+
+  // Finish Editing
+  const onFinishEditing = () => {
+    if (checkValidQuiz(questionsLocal)) {
+      onConfirmFinishEditing()
+    } else {
+      setConfirmDialogState({ ...confirmDialogState, open: true })
+    }
+  }
+
+  const onConfirmFinishEditing = () => {
+    navigate('/dashboard')
   }
 
   return (
@@ -548,6 +587,7 @@ export default function EditGame () {
                 name={'A'}
                 onCheckBoxChange={handleQuestionCheckChange}
                 checked={questionsLocal.length > 0 ? questionsLocal[focusItem].correct.includes('A') : false}
+                checkBoxDisabled={questionsLocal.length > 0 ? questionsLocal[focusItem].a === '' : true}
               />
             </Grid>
             <Grid item xs={12} md={6} display={'flex'} alignItems='center' justifyContent={'center'}>
@@ -560,6 +600,7 @@ export default function EditGame () {
                 name={'B'}
                 onCheckBoxChange={handleQuestionCheckChange}
                 checked={questionsLocal.length > 0 ? questionsLocal[focusItem].correct.includes('B') : false}
+                checkBoxDisabled={questionsLocal.length > 0 ? questionsLocal[focusItem].b === '' : true}
               />
             </Grid>
             <Grid item xs={12} md={6} display={'flex'} alignItems='center' justifyContent={'center'}>
@@ -571,6 +612,7 @@ export default function EditGame () {
                 name={'C'}
                 onCheckBoxChange={handleQuestionCheckChange}
                 checked={questionsLocal.length > 0 ? questionsLocal[focusItem].correct.includes('C') : false}
+                checkBoxDisabled={questionsLocal.length > 0 ? questionsLocal[focusItem].c === '' : true}
               />
             </Grid>
             <Grid item xs={12} md={6} display={'flex'} alignItems='center' justifyContent={'center'}>
@@ -582,6 +624,7 @@ export default function EditGame () {
                 name={'D'}
                 onCheckBoxChange={handleQuestionCheckChange}
                 checked={questionsLocal.length > 0 ? questionsLocal[focusItem].correct.includes('D') : false}
+                checkBoxDisabled={questionsLocal.length > 0 ? questionsLocal[focusItem].d === '' : true}
               />
             </Grid>
             <Grid item xs={12} md={6} display={'flex'} alignItems='center' justifyContent={'center'}>
@@ -593,6 +636,7 @@ export default function EditGame () {
                 name={'E'}
                 onCheckBoxChange={handleQuestionCheckChange}
                 checked={questionsLocal.length > 0 ? questionsLocal[focusItem].correct.includes('E') : false}
+                checkBoxDisabled={questionsLocal.length > 0 ? questionsLocal[focusItem].e === '' : true}
               />
             </Grid>
             <Grid item xs={12} md={6} display={'flex'} alignItems='center' justifyContent={'center'}>
@@ -604,6 +648,7 @@ export default function EditGame () {
                 name={'F'}
                 onCheckBoxChange={handleQuestionCheckChange}
                 checked={questionsLocal.length > 0 ? questionsLocal[focusItem].correct.includes('F') : false}
+                checkBoxDisabled={questionsLocal.length > 0 ? questionsLocal[focusItem].f === '' : true}
               />
             </Grid>
           </Grid>
@@ -704,6 +749,7 @@ export default function EditGame () {
             <Button
               variant='contained'
               fullWidth
+              onClick={onFinishEditing}
             >
               Finish Editing
             </Button>
@@ -715,6 +761,15 @@ export default function EditGame () {
         onClose={onAlertDialogClose}
       >
       </AlertDialog>
+      <ConfirmDialog
+        {...confirmDialogState}
+        onClose={() => { setConfirmDialogState({ ...confirmDialogState, open: false }) }}
+        onConfirm={() => {
+          setConfirmDialogState({ ...confirmDialogState, open: false })
+          onConfirmFinishEditing()
+        }}
+      >
+      </ConfirmDialog>
     </>
   );
 }

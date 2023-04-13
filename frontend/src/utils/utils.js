@@ -43,6 +43,19 @@ export function fileToDataUrl (file) {
   return dataUrlPromise;
 }
 
+export function checkValidQuiz (questions) {
+  if (questions.length === 0) return false
+  for (const question of questions) {
+    if (question.title === '') return false
+    if (question.a === '' || question.b === '') return false
+    if (question.correct.length === 0) return false
+    if (question.d !== '' && question.c === '') return false
+    if (question.e !== '' && (question.c === '' || question.d === '')) return false
+    if (question.f !== '' && (question.c === '' || question.d === '' || question.e === '')) return false
+  }
+  return true
+}
+
 export const HOST = 'http://localhost:5005'
 export const LOGIN_URL = '/admin/auth/login'
 export const REGISTER_URL = '/admin/auth/register'
