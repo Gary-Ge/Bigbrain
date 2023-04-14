@@ -9,7 +9,7 @@ import { DialogContentText } from '@mui/material';
 export default function CopyLinkDialog ({ open, content, onClose, sessionId }) {
   const onCopy = () => {
     console.log(sessionId)
-    navigator.clipboard.writeText(`http://localhost:3000/play/${sessionId}`)
+    navigator.clipboard.writeText(`http://localhost:3000/join/${sessionId}`)
   }
 
   return (

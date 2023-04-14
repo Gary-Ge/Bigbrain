@@ -268,6 +268,7 @@ export default function QuizCard ({ image, title, questionNumber, quizId, onDele
         content={`Game "${title}" stopped. Do you want to view the result?`}
         onClose={closeStopSuccessDialog}
         onConfirm={closeStopSuccessDialog}
+        confirmButtonContent='Yes'
       >
       </ConfirmDialog>
       <CopyLinkDialog

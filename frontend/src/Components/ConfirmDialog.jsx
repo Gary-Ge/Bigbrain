@@ -6,7 +6,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { DialogContentText } from '@mui/material';
 
-export default function ConfirmDialog ({ open, content, onClose, onConfirm }) {
+export default function ConfirmDialog ({ open, content, onClose, onConfirm, confirmButtonContent = 'Confirm' }) {
   return (
     <Dialog
       open={open}
@@ -23,7 +23,7 @@ export default function ConfirmDialog ({ open, content, onClose, onConfirm }) {
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Close</Button>
-        <Button onClick={onConfirm}>Confirm</Button>
+        <Button onClick={onConfirm}>{confirmButtonContent}</Button>
       </DialogActions>
     </Dialog>
   )

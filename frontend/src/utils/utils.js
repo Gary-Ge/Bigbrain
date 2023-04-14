@@ -61,4 +61,5 @@ export const LOGIN_URL = '/admin/auth/login'
 export const REGISTER_URL = '/admin/auth/register'
 export const CREATE_GAME_URL = '/admin/quiz/new'
 export const GET_GAME_URL = '/admin/quiz'
+export const JOIN_GAME_URL = '/play/join'
 export const HEADER = { 'Content-Type': 'application/json' }
