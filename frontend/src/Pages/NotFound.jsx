@@ -1,9 +1,25 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Container, Typography, Button, Box } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 function NotFound () {
   const navigate = useNavigate()
+  const [content, setContent] = useState('')
+
+  const status = useParams().status
+
+  useEffect(() => {
+    switch (status) {
+      case '1001':
+        setContent('Invalid Quiz ID, the quiz ID you provided does not exist')
+        break
+      case '1002':
+        setContent('Invalid Player ID, the player ID you provided does not exist')
+        break
+      default:
+        setContent('The page you are looking for does not exist')
+    }
+  }, [])
 
   return (
     <Container maxWidth='sm'>
@@ -20,7 +36,7 @@ function NotFound () {
           404 Not Found
         </Typography>
         <Typography gutterBottom>
-          The page does not exist
+          {content}
         </Typography>
         <Button color="primary" onClick={() => { navigate('/dashboard') }}>
           Dashboard

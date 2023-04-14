@@ -20,7 +20,7 @@ export default function PlayGame () {
       setStarted(res.started)
     }).catch(error => {
       if (error.message === 'Player ID does not refer to valid player id') {
-        navigate('/notfound')
+        navigate('/notfound/1002')
       }
     })
   }, [])

@@ -63,4 +63,5 @@ export const CREATE_GAME_URL = '/admin/quiz/new'
 export const GET_GAME_URL = '/admin/quiz'
 export const JOIN_GAME_URL = '/play/join'
 export const PLAY_GAME_URL = '/play'
+export const GET_SESSION_URL = '/admin/session'
 export const HEADER = { 'Content-Type': 'application/json' }

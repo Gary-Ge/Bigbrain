@@ -96,12 +96,13 @@ export default function EditGame () {
       setResourceTextStatus({ ...resourceTextStatus, resource: res.questions[0].resource.startsWith('https://') ? res.questions[0].resource : '' })
     }).catch(error => {
       if (error.message === 'Invalid quiz ID') {
-        navigate('/notfound')
+        navigate('/notfound/1001')
+      } else {
+        setAlertDialogState({
+          open: true,
+          content: error.message
+        })
       }
-      setAlertDialogState({
-        open: true,
-        content: error.message
-      })
     })
   }, [])
 

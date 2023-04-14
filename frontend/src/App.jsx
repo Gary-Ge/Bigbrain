@@ -10,6 +10,7 @@ import { CssBaseline } from '@mui/material';
 import GameResult from './Pages/GameResult.jsx';
 import Join from './Pages/Join';
 import PlayGame from './Pages/PlayGame';
+import Admin from './Pages/Admin';
 
 function App () {
   return (
@@ -20,14 +21,25 @@ function App () {
           <Routes>
             <Route path='/' element={<Main />} />
             <Route path='dashboard' element={<Main />} />
+
             <Route path='login' element={<Login />} />
             <Route path='register' element={<Register />} />
+
             <Route path='editgame/:quizId' element={<EditGame />} />
+
             <Route path='gameresult' element={<GameResult />} />
-            <Route path='notfound' element={<NotFound />} />
+
             <Route path='join' element={<Join />} />
             <Route path='join/:sessionId' element={<Join withSessionId={true}/>} />
+
             <Route path='play/:playerId' element={<PlayGame />} />
+            <Route path='play' element={<NotFound />} />
+
+            <Route path='notfound' element={<NotFound />} />
+            <Route path='notfound/:status' element={<NotFound />} />
+
+            <Route path='admin/:sessionId' element={<Admin />} />
+            <Route path='admin' element={<NotFound />} />
           </Routes>
         </NavbarWrapper>
       </BrowserRouter>
