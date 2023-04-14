@@ -12,20 +12,26 @@ import ConfirmDialog from './ConfirmDialog';
 import { useNavigate } from 'react-router-dom';
 import { UpdateGameDTO } from '../utils/entities';
 import CopyLinkDialog from './CopyLinkDialog';
+import { Box, IconButton, Menu, MenuItem } from '@mui/material';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 export default function QuizCard ({ image, title, questionNumber, quizId, onDeleteSuccess, active }) {
   const navigate = useNavigate()
 
   const [alertDialogOpen, setAlertDialogOpen] = useState(false)
   const [alertDialogContent, setAlertDialogContent] = useState('')
+
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false)
   const [confirmDialogContent, setConfirmDialogContent] = useState('')
+
+  const [stopSuccessDialogOpen, setStopSuccessDialogOpen] = useState(false)
 
   const [copyLinkDialogOpen, setCopyLinkDialogOpen] = useState(false)
   const [copyLinkDialogContent, setCopyLinkDialogContent] = useState('')
   const [sessionId, setSessionId] = useState(null)
 
   const [started, setStarted] = useState(active)
+  const [anchorEl, setAnchorEl] = useState(null)
 
   const closeAlertDialog = () => {
     setAlertDialogOpen(false)
@@ -35,8 +41,30 @@ export default function QuizCard ({ image, title, questionNumber, quizId, onDele
     setConfirmDialogOpen(false)
   }
 
+  const closeStopSuccessDialog = () => {
+    setStopSuccessDialogOpen(false)
+  }
+
   const closeCopyLinkDialog = () => {
     setCopyLinkDialogOpen(false)
+  }
+
+  const onConfirmDialogConfirm = () => {
+    setConfirmDialogOpen(false)
+    deleteQuiz()
+  }
+
+  const openDeleteConfirmDialog = () => {
+    setConfirmDialogContent(`Are you sure you want to delete game "${title}" ?`)
+    setConfirmDialogOpen(true)
+  }
+
+  const openMoreButtonMenu = (event) => {
+    setAnchorEl(event.currentTarget)
+  }
+
+  const closeMoreButtonMenu = () => {
+    setAnchorEl(null)
   }
 
   const deleteQuiz = () => {
@@ -109,14 +137,20 @@ export default function QuizCard ({ image, title, questionNumber, quizId, onDele
     })
   }
 
-  const onConfirmDialogConfirm = () => {
-    setConfirmDialogOpen(false)
-    deleteQuiz()
-  }
-
-  const openDeleteConfirmDialog = () => {
-    setConfirmDialogContent(`Are you sure you want to delete game "${title}" ?`)
-    setConfirmDialogOpen(true)
+  const stopQuiz = () => {
+    fetch(`${HOST}${GET_GAME_URL}/${quizId}/end`, {
+      method: 'POST',
+      headers: getAuthHeader()
+    }).then(res => res.json()).then(res => {
+      if (res.error != null) {
+        throw new Error(res.error)
+      }
+      setStopSuccessDialogOpen(true)
+      setStarted(false)
+    }).catch(error => {
+      setAlertDialogContent(error.message)
+      setAlertDialogOpen(true)
+    })
   }
 
   const toEdit = () => {
@@ -187,10 +221,34 @@ export default function QuizCard ({ image, title, questionNumber, quizId, onDele
           {questionNumber} Questions
         </Typography>
       </CardContent>
-      <CardActions sx={{ pt: 0, pl: 0, pr: 0 }}>
-        <Button size='small' onClick={toEdit}>Edit</Button>
-        <Button size='small' onClick={openDeleteConfirmDialog}>Delete</Button>
-        <Button size='small' onClick={started ? getSessionId : startQuiz} >{started ? 'started' : 'start'}</Button>
+      <CardActions sx={{ pt: 0, pl: 1, pr: 0 }}>
+        <Button size='small' onClick={started ? getSessionId : startQuiz} >{started ? 'running' : 'start'}</Button>
+        <Button size='small' onClick={stopQuiz} sx={{ display: started ? 'block' : 'none' }}>Stop</Button>
+        <Button size='small' sx={{ display: started ? 'block' : 'none' }}>Admin</Button>
+        <Box flexGrow={1} />
+        <IconButton
+          aria-controls='more-button-menu'
+          aria-haspopup='true'
+          onClick={openMoreButtonMenu}
+        >
+          <MoreVertIcon />
+        </IconButton>
+        <Menu
+          id='more-button-menu'
+          anchorEl={anchorEl}
+          keepMounted
+          open={Boolean(anchorEl)}
+          onClose={closeMoreButtonMenu}
+        >
+          <MenuItem onClick={() => {
+            toEdit()
+            closeMoreButtonMenu()
+          }}>Edit</MenuItem>
+          <MenuItem onClick={() => {
+            openDeleteConfirmDialog()
+            closeMoreButtonMenu()
+          }}>Delete</MenuItem>
+        </Menu>
       </CardActions>
       <AlertDialog
         open={alertDialogOpen}
@@ -203,6 +261,13 @@ export default function QuizCard ({ image, title, questionNumber, quizId, onDele
         onClose={closeConfirmDialog}
         onConfirm={onConfirmDialogConfirm}
         content={confirmDialogContent}
+      >
+      </ConfirmDialog>
+      <ConfirmDialog
+        open={stopSuccessDialogOpen}
+        content={`Game "${title}" stopped. Do you want to view the result?`}
+        onClose={closeStopSuccessDialog}
+        onConfirm={closeStopSuccessDialog}
       >
       </ConfirmDialog>
       <CopyLinkDialog

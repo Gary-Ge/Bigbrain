@@ -43,7 +43,7 @@ function Navbar () {
   };
 
   const updateLoginStatus = () => {
-    setPages(getToken() ? ['Products', 'Pricing', 'Register', 'Logout'] : ['Products', 'Pricing', 'Register', 'Login'])
+    setPages(getToken() ? ['Dashboard', 'Join', 'Register', 'Logout'] : ['Dashboard', 'Join', 'Register', 'Login'])
   }
 
   return (

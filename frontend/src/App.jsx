@@ -16,9 +16,9 @@ function App () {
         <NavbarWrapper>
           <Routes>
             <Route path='/' element={<Main />} />
+            <Route path='dashboard' element={<Main />} />
             <Route path='login' element={<Login />} />
             <Route path='register' element={<Register />} />
-            <Route path='dashboard' element={<Main />} />
             <Route path='editgame/:quizId' element={<EditGame />} />
             <Route path='gameresult' element={<GameResult />} />
           </Routes>
