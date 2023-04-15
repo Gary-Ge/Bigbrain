@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useEffect, useState } from 'react';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
@@ -7,7 +8,6 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { checkValidQuiz, GET_GAME_URL, getAuthHeader, HOST } from '../utils/utils';
 import AlertDialog from './AlertDialog';
-import { useState } from 'react';
 import ConfirmDialog from './ConfirmDialog';
 import { useNavigate } from 'react-router-dom';
 import { UpdateGameDTO } from '../utils/entities';
@@ -15,7 +15,7 @@ import CopyLinkDialog from './CopyLinkDialog';
 import { Box, IconButton, Menu, MenuItem } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 
-export default function QuizCard ({ image, title, questionNumber, quizId, onDeleteSuccess, active }) {
+export default function QuizCard ({ image, title, quizId, onDeleteSuccess }) {
   const navigate = useNavigate()
 
   const [alertDialogOpen, setAlertDialogOpen] = useState(false)
@@ -28,9 +28,13 @@ export default function QuizCard ({ image, title, questionNumber, quizId, onDele
 
   const [copyLinkDialogOpen, setCopyLinkDialogOpen] = useState(false)
   const [copyLinkDialogContent, setCopyLinkDialogContent] = useState('')
-  const [sessionId, setSessionId] = useState(null)
 
-  const [started, setStarted] = useState(active)
+  const [sessionId, setSessionId] = useState(null)
+  const [started, setStarted] = useState(null)
+
+  const [questionCount, setQuestionCount] = useState(0)
+  const [totalDuration, setTotalDuration] = useState(0)
+
   const [anchorEl, setAnchorEl] = useState(null)
 
   const closeAlertDialog = () => {
@@ -66,6 +70,28 @@ export default function QuizCard ({ image, title, questionNumber, quizId, onDele
   const closeMoreButtonMenu = () => {
     setAnchorEl(null)
   }
+
+  useEffect(() => {
+    fetch(`${HOST}${GET_GAME_URL}/${quizId}`, {
+      method: 'GET',
+      headers: getAuthHeader()
+    }).then(res => res.json()).then(res => {
+      if (res.error != null) {
+        throw new Error(res.error)
+      }
+      setSessionId(res.active)
+      setStarted(res.active !== null)
+      setQuestionCount(res.questions.length)
+      let sum = 0
+      for (const question of res.questions) {
+        sum += question.duration
+      }
+      setTotalDuration(sum)
+    }).catch(error => {
+      setAlertDialogContent(error.message)
+      setAlertDialogOpen(true)
+    })
+  }, [])
 
   const deleteQuiz = () => {
     fetch(`${HOST}${GET_GAME_URL}/${quizId}`, {
@@ -218,13 +244,16 @@ export default function QuizCard ({ image, title, questionNumber, quizId, onDele
           {title}
         </Typography>
         <Typography component='p' color='GrayText'>
-          {questionNumber} Questions
+          {questionCount === 0 || questionCount === 1 ? `${questionCount} Question` : `${questionCount} Questions`}
+        </Typography>
+        <Typography component='p' color='GrayText'>
+          {totalDuration} Seconds
         </Typography>
       </CardContent>
       <CardActions sx={{ pt: 0, pl: 1, pr: 0 }}>
         <Button size='small' onClick={started ? getSessionId : startQuiz} >{started ? 'running' : 'start'}</Button>
         <Button size='small' onClick={stopQuiz} sx={{ display: started ? 'block' : 'none' }}>Stop</Button>
-        <Button size='small' sx={{ display: started ? 'block' : 'none' }}>Admin</Button>
+        <Button size='small' onClick={() => { navigate(`/admin/${quizId}/${sessionId}`) }} sx={{ display: started ? 'block' : 'none' }}>Admin</Button>
         <Box flexGrow={1} />
         <IconButton
           aria-controls='more-button-menu'

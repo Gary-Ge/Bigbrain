@@ -38,8 +38,9 @@ function App () {
             <Route path='notfound' element={<NotFound />} />
             <Route path='notfound/:status' element={<NotFound />} />
 
-            <Route path='admin/:sessionId' element={<Admin />} />
-            <Route path='admin' element={<NotFound />} />
+            <Route path='admin/:quizId/:sessionId' element={<Admin />} />
+            <Route path='admin/:quizId' element={<NotFound />} />
+            <Route path='admin/' element={<NotFound />} />
           </Routes>
         </NavbarWrapper>
       </BrowserRouter>

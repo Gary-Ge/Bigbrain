@@ -16,6 +16,9 @@ function NotFound () {
       case '1002':
         setContent('Invalid Player ID, the player ID you provided does not exist')
         break
+      case '1003':
+        setContent('Invalid Session ID, the Session ID you provided does not exist')
+        break
       default:
         setContent('The page you are looking for does not exist')
     }

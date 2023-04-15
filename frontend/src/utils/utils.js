@@ -1,3 +1,5 @@
+import config from '../config.json'
+
 export function validEmail (email) {
   if (email == null || email === '' || !email.match(/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/)) {
     return false
@@ -56,7 +58,7 @@ export function checkValidQuiz (questions) {
   return true
 }
 
-export const HOST = 'http://localhost:5005'
+export const HOST = `http://localhost:${config.BACKEND_PORT}`
 export const LOGIN_URL = '/admin/auth/login'
 export const REGISTER_URL = '/admin/auth/register'
 export const CREATE_GAME_URL = '/admin/quiz/new'

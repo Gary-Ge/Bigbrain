@@ -1,28 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Paper from '@mui/material/Paper';
 import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 
-export default function CountDownProgress ({ countdownStart, remainingStart, step, display }) {
-  const [countdown, setCountdown] = useState(countdownStart)
-  const [remaining, setRemaining] = useState(remainingStart)
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCountdown((prevCountdown) => prevCountdown - 1);
-      setRemaining((prevRemaining) => prevRemaining - step);
-    }, 1000);
-
-    if (countdown === 0) {
-      clearInterval(timer);
-    }
-
-    return () => {
-      clearInterval(timer);
-    };
-  }, [countdown]);
-
+export default function CountDownProgress ({ countdown, progress, display }) {
   return (
     <Paper
       elevation={3}
@@ -40,7 +22,7 @@ export default function CountDownProgress ({ countdownStart, remainingStart, ste
     >
       <LinearProgress
         variant="determinate"
-        value={remaining}
+        value={progress}
         sx={{
           position: 'absolute',
           top: 0,
