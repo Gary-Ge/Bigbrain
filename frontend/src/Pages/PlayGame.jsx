@@ -6,6 +6,7 @@ import LabelledCheckBox from '../Components/LabelledCheckBox';
 import CountDownProgress from '../Components/CountDownProgress';
 import YoutubePlayer from '../Components/YoutubePlayer';
 import ImageDisplay from '../Components/ImageDisplay';
+import ImageSlide from '../Components/ImageSlide';
 
 export default function PlayGame () {
   const playerId = useParams().playerId
@@ -178,18 +179,13 @@ export default function PlayGame () {
         justifyContent='center'
         display='flex'
         overflow={'auto'}
-        padding={2}
+        padding={started === 'Not Started' ? 0 : 2}
         minHeight='calc(100vh - var(--nav-h))'
       >
         {started === 'Not Started' &&
           (
             <>
-              <Typography variant="h5" align='center' gutterBottom>
-                {`Your player ID is ${playerId}.`}
-              </Typography>
-              <Typography variant="h3" align='center' gutterBottom>
-                The game has not started yet, please wait
-              </Typography>
+              <ImageSlide playerId={playerId}/>
             </>
           )
         }

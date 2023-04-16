@@ -46,7 +46,7 @@ class Main extends React.Component {
               </Grid>
               {this.state.games.map((game, index) => (
                 <Grid key={index} item xs={12} sm={6} md={4} lg={3} xl={2} p={1}>
-                  <QuizCard image={'assets/test-thumbnail.jpg'} title={game.name} quizId={game.id} onDeleteSuccess={this.setGames}/>
+                  <QuizCard image={game.thumbnail === null ? '/assets/default-thumbnail.jpg' : game.thumbnail} title={game.name} quizId={game.id} onDeleteSuccess={this.setGames}/>
                 </Grid>
               ))}
             </Grid>

@@ -712,7 +712,7 @@ export default function EditGame () {
             </TextField>
           </ListItem>
           <ListItem>
-            <ImageDisplay minWidth={217} maxWidth={217} src={'/assets/no-resource.svg'} alt={'test'} />
+            <ImageDisplay minWidth={217} maxWidth={217} src={gameState.thumbnail === null ? '/assets/default-thumbnail.jpg' : gameState.thumbnail} alt={'thumbnail'} />
           </ListItem>
           <ListItem>
             <Divider />

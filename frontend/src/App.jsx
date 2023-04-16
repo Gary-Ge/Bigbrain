@@ -11,6 +11,7 @@ import GameResult from './Pages/GameResult.jsx';
 import Join from './Pages/Join';
 import PlayGame from './Pages/PlayGame';
 import Admin from './Pages/Admin';
+import ImageSlide from './Components/ImageSlide';
 
 function App () {
   return (
@@ -41,6 +42,8 @@ function App () {
             <Route path='admin/:quizId/:sessionId' element={<Admin />} />
             <Route path='admin/:quizId' element={<NotFound />} />
             <Route path='admin/' element={<NotFound />} />
+
+            <Route path='test' element={<ImageSlide />} />
           </Routes>
         </NavbarWrapper>
       </BrowserRouter>
