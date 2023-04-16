@@ -4,6 +4,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { HEADER, HOST, PLAY_GAME_URL } from '../utils/utils';
 import LabelledCheckBox from '../Components/LabelledCheckBox';
 import CountDownProgress from '../Components/CountDownProgress';
+import YoutubePlayer from '../Components/YoutubePlayer';
+import ImageDisplay from '../Components/ImageDisplay';
 
 export default function PlayGame () {
   const playerId = useParams().playerId
@@ -211,6 +213,26 @@ export default function PlayGame () {
                   <Typography variant='h6' align='center' gutterBottom>
                     Timeout! Correct answer is/are marked as green!
                   </Typography>
+                )
+              }
+              {question && question.resource !== '' && question.resource.startsWith('https://youtu.be') &&
+                (
+                  <YoutubePlayer videoId={question.resource.split('/').pop()} />
+                )
+              }
+              {question && question.resource !== '' && question.resource.startsWith('https://www.youtube.com') &&
+                (
+                  <YoutubePlayer videoId={question.resource.split('=').pop()} />
+                )
+              }
+              {question && question.resource !== '' && question.resource.startsWith('data') &&
+                (
+                  <ImageDisplay
+                    minWidth={240}
+                    maxWidth={600}
+                    src={question.resource}
+                    alt={'test'}
+                  />
                 )
               }
               <Grid container mt={5} spacing={2} maxWidth={1200}>

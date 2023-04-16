@@ -19,7 +19,6 @@ export default function EditGame () {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
 
   const resourceUploadRef = useRef(null)
-  const questionsFileUploadRef = useRef(null)
 
   const MarginDrawer = styled(Drawer)(({ theme }) => ({
     '& .MuiDrawer-paper': {
@@ -48,10 +47,6 @@ export default function EditGame () {
   const [confirmDialogState, setConfirmDialogState] = useState({
     open: false,
     content: 'This game is not able to be started because you have at least one required field incomplete.\n Note that Each question requires a title, at least two options (A and B) and at least one correct answer. In addition, please fill in the options in order, for example, you cannot only fill in option D and leave option C blank.\n Of course, we\'ve saved everything you\'ve filled in, so you can quit editing now and come back later to refine it.\n Are you sure you want to finish editing?'
-  })
-  const [confirmUploadDialogState, setConfirmUploadDialogState] = useState({
-    open: false,
-    content: 'If the file upload is successful, all your existing questions will be overwritten. Are you sure you want to upload a file?'
   })
 
   const [questions, setQuestions] = useState([])
@@ -354,17 +349,6 @@ export default function EditGame () {
     saveQuestion()
   }
 
-  // Update resource
-  const getResource = (resource) => {
-    if (resource == null || resource === '') {
-      return '/assets/no-resource.svg'
-    } else if (resource.startsWith('data:image')) {
-      return resource
-    } else {
-      return '/assets/video.svg'
-    }
-  }
-
   const onResourceInputChange = (event) => {
     setResourceTextStatus({ ...resourceTextStatus, resource: event.target.value })
   }
@@ -410,12 +394,6 @@ export default function EditGame () {
     event.target.value = ''
   }
 
-  const onClickResource = () => {
-    if (questionsLocal[focusItem].resource.startsWith('https://')) {
-      window.open(questionsLocal[focusItem].resource)
-    }
-  }
-
   // Finish Editing
   const onFinishEditing = () => {
     if (checkValidQuiz(questionsLocal)) {
@@ -427,12 +405,6 @@ export default function EditGame () {
 
   const onConfirmFinishEditing = () => {
     navigate('/dashboard')
-  }
-
-  // Upload files containing questions
-  const onQuestionFileChange = (event) => {
-    const file = event.target.files[0]
-    console.log(file)
   }
 
   return (
@@ -612,9 +584,8 @@ export default function EditGame () {
               <ImageDisplay
                 minWidth={240}
                 maxWidth={600}
-                src={questionsLocal.length > 0 ? getResource(questionsLocal[focusItem].resource) : '/assets/no-resource.svg'}
+                src={questionsLocal[focusItem].resource}
                 alt={'test'}
-                onClick={onClickResource}
               />
             )
           }
@@ -788,22 +759,6 @@ export default function EditGame () {
             <Divider />
           </ListItem>
           <ListItem>
-            <Box sx={{ display: 'none' }}>
-              <input
-                type='file'
-                ref={questionsFileUploadRef}
-                onChange={onQuestionFileChange}
-              />
-            </Box>
-            <Button
-              variant='contained'
-              fullWidth
-              onClick={() => { setConfirmUploadDialogState({ ...confirmUploadDialogState, open: true }) }}
-            >
-              Upload Questions
-            </Button>
-          </ListItem>
-          <ListItem>
             <Button
               variant='contained'
               fullWidth
@@ -826,15 +781,6 @@ export default function EditGame () {
         onConfirm={() => {
           setConfirmDialogState({ ...confirmDialogState, open: false })
           onConfirmFinishEditing()
-        }}
-      >
-      </ConfirmDialog>
-      <ConfirmDialog
-        {...confirmUploadDialogState}
-        onClose={() => { setConfirmUploadDialogState({ ...confirmUploadDialogState, open: false }) }}
-        onConfirm={() => {
-          setConfirmUploadDialogState({ ...confirmUploadDialogState, open: false })
-          questionsFileUploadRef.current.click()
         }}
       >
       </ConfirmDialog>
