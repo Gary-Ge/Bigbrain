@@ -1,0 +1,88 @@
+{
+  "name": "HOLY QUIZ 2",
+  "thumbnail": null,
+  "questions": [
+    {
+      "title": "Which language is the best programming language?",
+      "a": "Java",
+      "b": "C++",
+      "c": "Python",
+      "d": "PHP",
+      "e": "C#",
+      "f": "C",
+      "correct": [
+        "A"
+      ],
+      "type": "Single Choice",
+      "duration": 60,
+      "points": 10,
+      "resource": ""
+    },
+    {
+      "title": "What online games do you like?",
+      "a": "League of Legend",
+      "b": "Overwatch",
+      "c": "CS:GO",
+      "d": "Apex",
+      "e": "PUBG",
+      "f": "Valorant",
+      "correct": [
+        "A",
+        "E",
+        "B"
+      ],
+      "type": "Multi Choice",
+      "duration": 120,
+      "points": 20,
+      "resource": ""
+    },
+    {
+      "title": "What F1 Team is your favorite",
+      "a": "Ferrari",
+      "b": "Mercedes",
+      "c": "Red Bull",
+      "d": "",
+      "e": "",
+      "f": "",
+      "correct": [
+        "A"
+      ],
+      "type": "Single Choice",
+      "duration": 60,
+      "points": 15,
+      "resource": "https://www.youtube.com/watch?v=pqrzOQtE4oo"
+    },
+    {
+      "title": "What F1 Team is your favorite (2)",
+      "a": "Aston Martin",
+      "b": "Alfa Romeo",
+      "c": "Alpine",
+      "d": "",
+      "e": "",
+      "f": "",
+      "correct": [
+        "B"
+      ],
+      "type": "Single Choice",
+      "duration": 60,
+      "points": 15,
+      "resource": "https://www.youtube.com/watch?v=pqrzOQtE4oo"
+    },
+    {
+      "title": "What F1 Team is your favorite (3)",
+      "a": "Alpha Tauri",
+      "b": "McLaren",
+      "c": "Haas",
+      "d": "Williams",
+      "e": "",
+      "f": "",
+      "correct": [
+        "D"
+      ],
+      "type": "Single Choice",
+      "duration": 60,
+      "points": 15,
+      "resource": "https://www.youtube.com/watch?v=pqrzOQtE4oo"
+    }
+  ]
+}

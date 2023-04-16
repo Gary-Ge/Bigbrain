@@ -91,7 +91,7 @@ export default function QuizCard ({ image, title, quizId, onDeleteSuccess }) {
       setAlertDialogContent(error.message)
       setAlertDialogOpen(true)
     })
-  }, [])
+  }, [quizId])
 
   const deleteQuiz = () => {
     fetch(`${HOST}${GET_GAME_URL}/${quizId}`, {
@@ -232,6 +232,10 @@ export default function QuizCard ({ image, title, quizId, onDeleteSuccess }) {
     })
   }
 
+  const toResult = () => {
+    navigate(`/admin/${quizId}/${sessionId}`)
+  }
+
   return (
     <Card sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <CardMedia
@@ -296,7 +300,7 @@ export default function QuizCard ({ image, title, quizId, onDeleteSuccess }) {
         open={stopSuccessDialogOpen}
         content={`Game "${title}" stopped. Do you want to view the result?`}
         onClose={closeStopSuccessDialog}
-        onConfirm={closeStopSuccessDialog}
+        onConfirm={toResult}
         confirmButtonContent='Yes'
       >
       </ConfirmDialog>
