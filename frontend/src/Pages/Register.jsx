@@ -118,6 +118,9 @@ class Register extends React.Component {
         throw new Error(res.error)
       }
       saveToken(res.token)
+      this.setState({
+        redirect: true
+      })
     }).catch(error => {
       this.setState({
         alertDialogOpen: true,

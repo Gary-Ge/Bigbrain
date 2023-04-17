@@ -20,6 +20,7 @@ export default function EditGame () {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
 
   const resourceUploadRef = useRef(null)
+  const thumbnailUploadRef = useRef(null)
 
   const MarginDrawer = styled(Drawer)(({ theme }) => ({
     '& .MuiDrawer-paper': {
@@ -73,6 +74,16 @@ export default function EditGame () {
     helperText: 'Paste youtube link here or upload image'
   })
 
+  const [gameNameTextStatus, setGameNameTextStatus] = useState({
+    error: false,
+    helperText: ''
+  })
+
+  const [thumbnailTextStatus, setThumbnailTextStatus] = useState({
+    error: false,
+    helperText: ''
+  })
+
   useEffect(() => {
     if (isMounted) {
       updateGame()
@@ -99,7 +110,7 @@ export default function EditGame () {
         thumbnail: res.thumbnail,
         name: res.name
       })
-      setFocusItem(questionId)
+      setFocusItem(questionId || -1)
       if (questionId) {
         setResourceTextStatus({ ...resourceTextStatus, resource: res.questions[questionId].resource.startsWith('https://') ? res.questions[questionId].resource : '' })
       }
@@ -132,6 +143,45 @@ export default function EditGame () {
     setGameState({ ...gameState, name: event.target.value })
   }
 
+  const handleGameNameBlur = () => {
+    if (gameState.name === null || gameState.name === '') {
+      setGameNameTextStatus({
+        error: true,
+        helperText: 'Game name cannot be empty'
+      })
+      return
+    }
+    setGameNameTextStatus({
+      error: false,
+      helperText: ''
+    })
+    saveQuestion()
+  }
+
+  const setThumbnailWithCallback = async (newState, callback) => {
+    await new Promise((resolve) => {
+      setGameState((prevState) => {
+        resolve()
+        return newState
+      })
+    })
+    callback()
+  }
+
+  const onUploadThumbnailChange = (event) => {
+    const file = event.target.files[0]
+    if (file == null) return
+    fileToDataUrl(file).then(res => {
+      setThumbnailTextStatus({ error: false, helperText: 'Upload thumbnails' })
+      setThumbnailWithCallback({ ...gameState, thumbnail: res }, () => {
+        saveQuestion()
+      })
+    }).catch(error => {
+      setResourceTextStatus({ error: true, helperText: error.message })
+    })
+    event.target.value = ''
+  }
+
   // Update question meta data
   const handleGameTypeSelectorChange = (event) => {
     const newQuestionLocal = [...questionsLocal]
@@ -161,12 +211,6 @@ export default function EditGame () {
   const handleDeleteClick = (index) => {
     const newQuestionLocal = [...questionsLocal]
     newQuestionLocal.splice(index, 1)
-    if (focusItem > newQuestionLocal.length - 1) {
-      setFocusItem(newQuestionLocal.length - 1)
-      setResourceTextStatus({ ...resourceTextStatus, resource: newQuestionLocal[newQuestionLocal.length - 1].resource.startsWith('https://') ? newQuestionLocal[newQuestionLocal.length - 1].resource : '' })
-    } else {
-      setResourceTextStatus({ ...resourceTextStatus, resource: newQuestionLocal[focusItem].resource.startsWith('https://') ? newQuestionLocal[focusItem].resource : '' })
-    }
     setQuestionsLocal(newQuestionLocal)
     setQuestions(newQuestionLocal)
   }
@@ -437,22 +481,26 @@ export default function EditGame () {
                     onClick={() => handleQuestionClick(index)}
                     focused={parseInt(focusItem) === index}
                     onDeleteClick={() => handleDeleteClick(index)}
-                    isDeletable={questionsLocal.length > 1}
+                    isDeletable={!questionId && questionsLocal.length > 1}
                   />
                 ))}
               </List>
-              <Button
-                sx={{
-                  marginLeft: 1,
-                  width: 50,
-                  height: 50,
-                  marginTop: 1
-                }}
-                variant='contained'
-                onClick={createQuestion}
-              >
-                <Add />
-              </Button>
+              {!questionId &&
+                (
+                  <Button
+                    sx={{
+                      marginLeft: 1,
+                      width: 50,
+                      height: 50,
+                      marginTop: 1
+                    }}
+                    variant='contained'
+                    onClick={createQuestion}
+                  >
+                    <Add />
+                  </Button>
+                )
+              }
             </Toolbar>
           </AppBar>
       </Hidden>
@@ -484,23 +532,115 @@ export default function EditGame () {
                 onClick={() => handleQuestionClick(index)}
                 focused={parseInt(focusItem) === index}
                 onDeleteClick={() => handleDeleteClick(index)}
-                isDeletable={questionsLocal.length > 1}
+                isDeletable={!questionId && questionsLocal.length > 1}
               />
             ))}
-            <Button
-              sx={{
-                marginLeft: 1,
-                width: 50,
-                height: 50
-              }}
-              variant='contained'
-              onClick={createQuestion}
-            >
-              <Add />
-            </Button>
+            {!questionId &&
+              (
+                <Button
+                  sx={{
+                    marginLeft: 1,
+                    width: 50,
+                    height: 50
+                  }}
+                  variant='contained'
+                  onClick={createQuestion}
+                >
+                  <Add />
+                </Button>
+              )
+            }
           </List>
         </MarginDrawer>
       </Hidden>
+      {focusItem === -1 &&
+        (
+          <>
+            <Grid
+              container
+              height={'calc(100vh - var(--nav-h))'}
+              display={'flex'}
+              overflow={'auto'}
+            >
+              <Hidden mdDown>
+                <Grid
+                  item
+                  xs={12}
+                  sm={12}
+                  md={4}
+                  lg={3}
+                  xl={2}
+                  borderRadius={5}
+                  overflow={'auto'}
+                >
+                </Grid>
+              </Hidden>
+              <Grid
+                item
+                xs={12}
+                sm={12}
+                md={8}
+                lg={9}
+                xl={10}
+                padding={2}
+                flex={1}
+                display={'flex'}
+                flexDirection={'column'}
+                alignItems={'center'}
+                justifyContent={'center'}
+                sx={{ paddingBottom: isMobile ? theme.spacing(14) : 2 }}
+              >
+                <TextField
+                  required
+                  label='Game Name'
+                  fullWidth
+                  sx={{ maxWidth: 1400 }}
+                  value={gameState.name ? gameState.name : ''}
+                  onChange={handleGameNameChange}
+                  onBlur={handleGameNameBlur}
+                  {...gameNameTextStatus}
+                />
+                <Box sx={{ display: 'none' }}>
+                  <input
+                    type='file'
+                    ref={thumbnailUploadRef}
+                    onChange={onUploadThumbnailChange}
+                  />
+                </Box>
+                <TextField
+                  label={'Thumbnail'}
+                  fullWidth
+                  size='small'
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position='end'>
+                        <Button size='small' onClick={() => {
+                          setThumbnailWithCallback({ ...gameState, thumbnail: '/assets/default-thumbnail.jpg' }, () => {
+                            saveQuestion()
+                          })
+                        }}>Clear</Button>
+                        <Button size='small' onClick={() => { thumbnailUploadRef.current.click() }}>Upload</Button>
+                      </InputAdornment>
+                    )
+                  }}
+                  sx={{
+                    marginTop: 5,
+                    marginBottom: 3,
+                    maxWidth: 1000
+                  }}
+                  disabled={true}
+                  {...thumbnailTextStatus}
+                >
+                </TextField>
+                <ImageDisplay minWidth={260} maxWidth={600} src={gameState.thumbnail === null || gameState.thumbnail === '' ? '/assets/default-thumbnail.jpg' : gameState.thumbnail} alt={'Thumbnail'}/>
+                <Button variant='contained' color='success' sx={{
+                  marginTop: 3
+                }}>Finish Editing</Button>
+              </Grid>
+            </Grid>
+          </>
+        )
+      }
       {focusItem >= 0 &&
         (
           <>
@@ -708,22 +848,6 @@ export default function EditGame () {
                   width: 250,
                 }}
               >
-                <ListItem>
-                  <Typography>Game Setup</Typography>
-                </ListItem>
-                <ListItem>
-                  <TextField
-                    fullWidth
-                    label='Game Name'
-                    value={gameState.name}
-                    onChange={handleGameNameChange}
-                    onBlur={saveQuestion}
-                  >
-                  </TextField>
-                </ListItem>
-                <ListItem>
-                  <ImageDisplay minWidth={217} maxWidth={217} src={gameState.thumbnail === null ? '/assets/default-thumbnail.jpg' : gameState.thumbnail} alt={'thumbnail'} />
-                </ListItem>
                 <ListItem>
                   <Divider />
                 </ListItem>

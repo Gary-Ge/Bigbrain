@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Container, Box, Typography, Grid } from '@mui/material';
+import { Container, Box, Typography, Grid, Table, TableHead, TableRow, TableCell } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 import { HEADER, HOST, PLAY_GAME_URL } from '../utils/utils';
 import LabelledCheckBox from '../Components/LabelledCheckBox';
@@ -25,6 +25,7 @@ export default function PlayGame () {
   const [correctAnswer, setCorrectAnswer] = useState([])
 
   const [points, setPoints] = useState([])
+  const [durations, setDurations] = useState([])
 
   const lastQuestionTimeRef = useRef(null)
   // Check if the playerID is valid
@@ -88,6 +89,7 @@ export default function PlayGame () {
         setDisabled(false)
         startTimer(res.question.isoTimeLastQuestionStarted, res.question.duration)
         setPoints((prevPoints) => [...prevPoints, res.question.points])
+        setDurations((prevDurations) => [...prevDurations, res.question.duration])
       }
     }).catch(error => {
       if (error.message === 'Player ID does not refer to valid player id') {
@@ -356,6 +358,18 @@ export default function PlayGame () {
               <Typography>
                 {points}
               </Typography>
+              <Typography>
+                {durations}
+              </Typography>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>A</TableCell>
+                    <TableCell>B</TableCell>
+                    <TableCell>C</TableCell>
+                  </TableRow>
+                </TableHead>
+              </Table>
             </>
           )
         }

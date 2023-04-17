@@ -35,10 +35,10 @@ function NotFound () {
           minHeight: 'calc(100vh - var(--nav-h))',
         }}
       >
-        <Typography variant="h3" gutterBottom>
+        <Typography variant="h3" gutterBottom textAlign={'center'}>
           404 Not Found
         </Typography>
-        <Typography gutterBottom>
+        <Typography gutterBottom textAlign={'center'}>
           {content}
         </Typography>
         <Button color="primary" onClick={() => { navigate('/dashboard') }}>
