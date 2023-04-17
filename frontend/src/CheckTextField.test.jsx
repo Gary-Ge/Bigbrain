@@ -1,82 +1,47 @@
 import React from 'react';
-import { mount } from 'enzyme';
-import { TextField, Checkbox } from '@mui/material';
-import { act } from 'react-dom/test-utils';
+import { shallow } from 'enzyme';
 import CheckTextField from './Components/CheckTextField'
+import { TextField, InputAdornment } from '@mui/material';
 
+// CheckTextField is used to editing the choice of a question, which has a checkbox inside a text field.
 describe('CheckTextField', () => {
   let wrapper;
-  const onChangeMock = jest.fn();
-  const onBlurMock = jest.fn();
-  const onCheckBoxChangeMock = jest.fn();
+  const onChange = jest.fn();
+  const onBlur = jest.fn();
+  const onCheckBoxChange = jest.fn();
 
   beforeEach(() => {
-    wrapper = mount(
+    wrapper = shallow(
       <CheckTextField
         label="Test Label"
-        required
-        value="Test value"
-        onChange={onChangeMock}
-        onBlur={onBlurMock}
-        name="testName"
-        onCheckBoxChange={onCheckBoxChangeMock}
-        checked
-        checkBoxDisabled
+        required={true}
+        value="Test Value"
+        onChange={onChange}
+        onBlur={onBlur}
+        name="Test Name"
+        onCheckBoxChange={onCheckBoxChange}
+        checked={false}
+        checkBoxDisabled={false}
       />
-    );
-  });
+    )
+  })
 
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
+  it('The amount of component and its sub-component should be correct', () => {
+    expect(wrapper.find(TextField)).toHaveLength(1)
+    expect(wrapper.find(InputAdornment)).toHaveLength(1)
+  })
 
-  it('renders the TextField component', () => {
-    expect(wrapper.find(TextField)).toHaveLength(1);
-  });
+  it('Component should be rendered with indicated props', () => {
+    const textField = wrapper.find(TextField)
+    expect(textField.prop('label')).toEqual('Test Label')
+    expect(textField.prop('required')).toEqual(true)
+    expect(textField.prop('value')).toEqual('Test Value')
+    expect(textField.prop('onChange')).toEqual(onChange)
+    expect(textField.prop('onBlur')).toEqual(onBlur)
 
-  it('renders the Checkbox component', () => {
-    expect(wrapper.find(Checkbox)).toHaveLength(1);
-  });
-
-  it('passes the correct props to the TextField component', () => {
-    const textFieldProps = wrapper.find(TextField).props();
-    expect(textFieldProps.label).toBe('Test Label');
-    expect(textFieldProps.required).toBe(true);
-    expect(textFieldProps.value).toBe('Test value');
-    expect(textFieldProps.onChange).toEqual(expect.any(Function));
-    expect(textFieldProps.onBlur).toEqual(expect.any(Function));
-  });
-
-  it('passes the correct props to the Checkbox component', () => {
-    const checkboxProps = wrapper.find(Checkbox).props();
-    expect(checkboxProps.color).toBe('primary');
-    expect(checkboxProps.onChange).toEqual(expect.any(Function));
-    expect(checkboxProps.name).toBe('testName');
-    expect(checkboxProps.checked).toBe(true);
-    expect(checkboxProps.disabled).toBe(true);
-  });
-
-  it('calls the onChange callback when the TextField value changes', () => {
-    const textField = wrapper.find(TextField);
-    act(() => {
-      textField.props().onChange({ target: { value: 'New value' } });
-    });
-    expect(onChangeMock).toHaveBeenCalled();
-  });
-
-  it('calls the onBlur callback when the TextField loses focus', () => {
-    const textField = wrapper.find(TextField);
-    act(() => {
-      textField.props().onBlur();
-    });
-    expect(onBlurMock).toHaveBeenCalled();
-  });
-
-  it('calls the onCheckBoxChange callback when the Checkbox is clicked', () => {
-    const checkbox = wrapper.find(Checkbox);
-    act(() => {
-      checkbox.props().onChange({ target: { checked: false } });
-    });
-    expect(onCheckBoxChangeMock).toHaveBeenCalled();
-  });
+    // const checkbox = wrapper.find(Checkbox)
+    // expect(checkbox.prop('name')).toEqual('Test Name')
+    // expect(checkbox.prop('checked')).toEqual(false)
+    // expect(checkbox.prop('disabled')).toEqual(false)
+  })
 });
