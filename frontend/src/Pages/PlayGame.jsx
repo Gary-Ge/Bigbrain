@@ -395,6 +395,8 @@ export default function PlayGame () {
         {started === 'Finished' &&
           (
             <>
+          <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+          <Grid item xs={12}>
           <TableContainer component={Paper}>
           <Title>Game Results</Title>
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -419,6 +421,8 @@ export default function PlayGame () {
           <Typography component="h2" variant="h6" gutterBottom style={{ marginTop: '5%', fontSize: '12px', textAlign: 'left' }}>
               Score Calculation Formula: (Remaining answer time/each question total time)*each question total score
           </Typography>
+          </Grid>
+          </Container>
           </>
           )
         }
