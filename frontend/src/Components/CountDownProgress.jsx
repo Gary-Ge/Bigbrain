@@ -4,7 +4,7 @@ import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 
-export default function CountDownProgress ({ countdown, progress, display }) {
+export default function CountDownProgress ({ countdown = 100, progress = 100, display = true }) {
   return (
     <Paper
       elevation={3}
