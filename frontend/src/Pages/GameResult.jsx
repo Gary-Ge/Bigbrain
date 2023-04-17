@@ -240,9 +240,8 @@ export default function DashboardContent ({ sessionId, quizId }) {
     }
     const playerScores = player.map((player, index) => [player, totalscore[index]]);
     playerScores.sort((a, b) => b[1] - a[1]);
-    return playerScores
+    return playerScores.slice(0, 5);
   }
-  console.log(Points(score, items))
   function Orders () {
     return (
         <React.Fragment>

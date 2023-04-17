@@ -11,6 +11,7 @@ import GameResult from './Pages/GameResult.jsx';
 import Join from './Pages/Join';
 import PlayGame from './Pages/PlayGame';
 import Admin from './Pages/Admin';
+import PastResult from './Pages/PastResult';
 import ImageSlide from './Components/ImageSlide';
 
 function App () {
@@ -30,6 +31,7 @@ function App () {
             <Route path='editgame/:quizId/:questionId' element={<EditGame />} />
 
             <Route path='gameresult' element={<GameResult />} />
+            <Route path='pastresult' element={<PastResult />} />
 
             <Route path='join' element={<Join />} />
             <Route path='join/:sessionId' element={<Join withSessionId={true}/>} />
