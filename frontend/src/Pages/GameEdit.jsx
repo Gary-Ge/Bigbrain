@@ -13,6 +13,7 @@ import YoutubePlayer from '../Components/YoutubePlayer';
 
 export default function EditGame () {
   const quizId = useParams().quizId
+  const questionId = useParams().questionId
   const navigate = useNavigate()
 
   const theme = useTheme()
@@ -64,7 +65,7 @@ export default function EditGame () {
     error: false,
     helperText: ''
   })
-  const [focusItem, setFocusItem] = useState(0)
+  const [focusItem, setFocusItem] = useState(questionId || -1)
 
   const [resourceTextStatus, setResourceTextStatus] = useState({
     resource: '',
@@ -81,6 +82,7 @@ export default function EditGame () {
   }, [questions])
 
   useEffect(() => {
+    console.log(quizId)
     fetch(`${HOST}${GET_GAME_URL}/${quizId}`, {
       method: 'GET',
       headers: getAuthHeader()
@@ -88,13 +90,19 @@ export default function EditGame () {
       if (res.error != null) {
         throw new Error(res.error)
       }
+      if (questionId && (questionId >= res.questions.length || questionId < 0)) {
+        navigate('/notfound/1001')
+      }
       setQuestions(res.questions)
       setQuestionsLocal(res.questions)
       setGameState({
         thumbnail: res.thumbnail,
         name: res.name
       })
-      setResourceTextStatus({ ...resourceTextStatus, resource: res.questions[0].resource.startsWith('https://') ? res.questions[0].resource : '' })
+      setFocusItem(questionId)
+      if (questionId) {
+        setResourceTextStatus({ ...resourceTextStatus, resource: res.questions[questionId].resource.startsWith('https://') ? res.questions[questionId].resource : '' })
+      }
     }).catch(error => {
       if (error.message === 'Invalid quiz ID') {
         navigate('/notfound/1001')
@@ -105,7 +113,7 @@ export default function EditGame () {
         })
       }
     })
-  }, [])
+  }, [questionId])
 
   const onAlertDialogClose = () => {
     setAlertDialogState({ ...alertDialogState, open: false })
@@ -147,8 +155,7 @@ export default function EditGame () {
 
   // Select question and delete question
   const handleQuestionClick = (index) => {
-    setFocusItem(index)
-    setResourceTextStatus({ ...resourceTextStatus, resource: questionsLocal[index].resource.startsWith('https://') ? questionsLocal[index].resource : '' })
+    navigate(`/editgame/${quizId}/${index}`)
   }
 
   const handleDeleteClick = (index) => {
@@ -428,7 +435,7 @@ export default function EditGame () {
                     width={100}
                     height={60}
                     onClick={() => handleQuestionClick(index)}
-                    focused={focusItem === index}
+                    focused={parseInt(focusItem) === index}
                     onDeleteClick={() => handleDeleteClick(index)}
                     isDeletable={questionsLocal.length > 1}
                   />
@@ -475,7 +482,7 @@ export default function EditGame () {
                 text={question.title === '' || question.title == null ? `Question ${index + 1}` : question.title}
                 width={'90%'}
                 onClick={() => handleQuestionClick(index)}
-                focused={focusItem === index}
+                focused={parseInt(focusItem) === index}
                 onDeleteClick={() => handleDeleteClick(index)}
                 isDeletable={questionsLocal.length > 1}
               />
@@ -494,282 +501,288 @@ export default function EditGame () {
           </List>
         </MarginDrawer>
       </Hidden>
-      <Grid
-        container
-        height={'calc(100vh - var(--nav-h))'}
-        display={'flex'}
-        overflow={'auto'}
-      >
-        <Hidden mdDown>
-          <Grid
-            item
-            xs={12}
-            sm={12}
-            md={4}
-            lg={3}
-            xl={2}
-            borderRadius={5}
-            overflow={'auto'}
-          >
-          </Grid>
-        </Hidden>
-        <Grid
-          item
-          xs={12}
-          sm={12}
-          md={8}
-          lg={9}
-          xl={10}
-          padding={2}
-          flex={1}
-          display={'flex'}
-          flexDirection={'column'}
-          alignItems={'center'}
-          justifyContent={'center'}
-          sx={{ paddingBottom: isMobile ? theme.spacing(14) : 2 }}
-        >
-          <TextField
-            required
-            label='Question'
-            fullWidth
-            sx={{ maxWidth: 1400 }}
-            value={questionsLocal.length > 0 ? questionsLocal[focusItem].title : ''}
-            onChange={handleQuestionTitleChange}
-            onBlur={saveQuestion}
-          />
-          <Box
-            sx={{ width: '90%' }}
-            mt={4}
-            mb={2}
-          >
-            <Box sx={{ display: 'none' }}>
-              <input
-                type='file'
-                ref={resourceUploadRef}
-                onChange={onUploadFileChange}
-              />
-            </Box>
-            <TextField
-              label={'Resource'}
-              fullWidth
-              size='small'
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position='end'>
-                    <Button size='small' onClick={onClearResource}>Clear</Button>
-                    <Button size='small' onClick={openFileUploader}>Upload</Button>
-                  </InputAdornment>
-                )
-              }}
-              value={resourceTextStatus.resource}
-              onChange={onResourceInputChange}
-              onBlur={onResourceInputBlur}
-              error={resourceTextStatus.error}
-              helperText={resourceTextStatus.helperText}
+      {focusItem >= 0 &&
+        (
+          <>
+            <Grid
+              container
+              height={'calc(100vh - var(--nav-h))'}
+              display={'flex'}
+              overflow={'auto'}
             >
-            </TextField>
-          </Box>
-          {questionsLocal.length > 0 && questionsLocal[focusItem].resource.startsWith('https://youtu.be') &&
-            (
-              <YoutubePlayer videoId={questionsLocal[focusItem].resource.split('/').pop()} />
-            )
-          }
-          {questionsLocal.length > 0 && questionsLocal[focusItem].resource.startsWith('https://www.youtube.com') &&
-            (
-              <YoutubePlayer videoId={questionsLocal[focusItem].resource.split('=').pop()} />
-            )
-          }
-          {questionsLocal.length > 0 && questionsLocal[focusItem].resource.startsWith('data') &&
-            (
-              <ImageDisplay
-                minWidth={240}
-                maxWidth={600}
-                src={questionsLocal[focusItem].resource}
-                alt={'test'}
-              />
-            )
-          }
-          <Grid container mt={4} spacing={2} maxWidth={1400}>
-            <Grid item xs={12} md={6} display={'flex'} alignItems='center' justifyContent={'center'}>
-              <CheckTextField
-                label={'A (Required)'}
-                required={true}
-                value={questionsLocal.length > 0 ? questionsLocal[focusItem].a : ''}
-                onChange={handleQuestionAnswerAChange}
-                onBlur={saveQuestion}
-                name={'A'}
-                onCheckBoxChange={handleQuestionCheckChange}
-                checked={questionsLocal.length > 0 ? questionsLocal[focusItem].correct.includes('A') : false}
-                checkBoxDisabled={questionsLocal.length > 0 ? questionsLocal[focusItem].a === '' : true}
-              />
-            </Grid>
-            <Grid item xs={12} md={6} display={'flex'} alignItems='center' justifyContent={'center'}>
-              <CheckTextField
-                label={'B (Required)'}
-                required={true}
-                value={questionsLocal.length > 0 ? questionsLocal[focusItem].b : ''}
-                onChange={handleQuestionAnswerBChange}
-                onBlur={saveQuestion}
-                name={'B'}
-                onCheckBoxChange={handleQuestionCheckChange}
-                checked={questionsLocal.length > 0 ? questionsLocal[focusItem].correct.includes('B') : false}
-                checkBoxDisabled={questionsLocal.length > 0 ? questionsLocal[focusItem].b === '' : true}
-              />
-            </Grid>
-            <Grid item xs={12} md={6} display={'flex'} alignItems='center' justifyContent={'center'}>
-              <CheckTextField
-                label={'C'}
-                value={questionsLocal.length > 0 ? questionsLocal[focusItem].c : ''}
-                onChange={handleQuestionAnswerCChange}
-                onBlur={saveQuestion}
-                name={'C'}
-                onCheckBoxChange={handleQuestionCheckChange}
-                checked={questionsLocal.length > 0 ? questionsLocal[focusItem].correct.includes('C') : false}
-                checkBoxDisabled={questionsLocal.length > 0 ? questionsLocal[focusItem].c === '' : true}
-              />
-            </Grid>
-            <Grid item xs={12} md={6} display={'flex'} alignItems='center' justifyContent={'center'}>
-              <CheckTextField
-                label={'D'}
-                value={questionsLocal.length > 0 ? questionsLocal[focusItem].d : ''}
-                onChange={handleQuestionAnswerDChange}
-                onBlur={saveQuestion}
-                name={'D'}
-                onCheckBoxChange={handleQuestionCheckChange}
-                checked={questionsLocal.length > 0 ? questionsLocal[focusItem].correct.includes('D') : false}
-                checkBoxDisabled={questionsLocal.length > 0 ? questionsLocal[focusItem].d === '' : true}
-              />
-            </Grid>
-            <Grid item xs={12} md={6} display={'flex'} alignItems='center' justifyContent={'center'}>
-              <CheckTextField
-                label={'E'}
-                value={questionsLocal.length > 0 ? questionsLocal[focusItem].e : ''}
-                onChange={handleQuestionAnswerEChange}
-                onBlur={saveQuestion}
-                name={'E'}
-                onCheckBoxChange={handleQuestionCheckChange}
-                checked={questionsLocal.length > 0 ? questionsLocal[focusItem].correct.includes('E') : false}
-                checkBoxDisabled={questionsLocal.length > 0 ? questionsLocal[focusItem].e === '' : true}
-              />
-            </Grid>
-            <Grid item xs={12} md={6} display={'flex'} alignItems='center' justifyContent={'center'}>
-              <CheckTextField
-                label={'F'}
-                value={questionsLocal.length > 0 ? questionsLocal[focusItem].f : ''}
-                onChange={handleQuestionAnswerFChange}
-                onBlur={saveQuestion}
-                name={'F'}
-                onCheckBoxChange={handleQuestionCheckChange}
-                checked={questionsLocal.length > 0 ? questionsLocal[focusItem].correct.includes('F') : false}
-                checkBoxDisabled={questionsLocal.length > 0 ? questionsLocal[focusItem].f === '' : true}
-              />
-            </Grid>
-          </Grid>
-        </Grid>
-      </Grid>
-      <Fab
-        color='default'
-        size='small'
-        sx={{
-          position: 'fixed',
-          right: '0',
-          bottom: '50%',
-          transform: 'translateY(50%)',
-          borderRadius: '10px 0 0 10px',
-          width: 30,
-          height: 60
-        }}
-        onClick={openMarginDraw}
-      >
-        <ArrowBack>Add item</ArrowBack>
-      </Fab>
-      <Drawer
-       anchor='right'
-       open={marginDrawOpen}
-       onClose={onMarginDrawClose}
-      >
-        <List
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            height: '100%',
-            overflow: 'auto',
-            width: 250,
-          }}
-        >
-          <ListItem>
-            <Typography>Game Setup</Typography>
-          </ListItem>
-          <ListItem>
-            <TextField
-              fullWidth
-              label='Game Name'
-              value={gameState.name}
-              onChange={handleGameNameChange}
-              onBlur={saveQuestion}
-            >
-            </TextField>
-          </ListItem>
-          <ListItem>
-            <ImageDisplay minWidth={217} maxWidth={217} src={gameState.thumbnail === null ? '/assets/default-thumbnail.jpg' : gameState.thumbnail} alt={'thumbnail'} />
-          </ListItem>
-          <ListItem>
-            <Divider />
-          </ListItem>
-          <ListItem>
-            <Typography>Current Question Setup</Typography>
-          </ListItem>
-          <ListItem>
-            <FormControl fullWidth>
-              <InputLabel>Question Type</InputLabel>
-              <Select
-                value={questionsLocal.length > 0 ? questionsLocal[focusItem].type : ''}
-                label="Question Type"
-                onChange={handleGameTypeSelectorChange}
+              <Hidden mdDown>
+                <Grid
+                  item
+                  xs={12}
+                  sm={12}
+                  md={4}
+                  lg={3}
+                  xl={2}
+                  borderRadius={5}
+                  overflow={'auto'}
+                >
+                </Grid>
+              </Hidden>
+              <Grid
+                item
+                xs={12}
+                sm={12}
+                md={8}
+                lg={9}
+                xl={10}
+                padding={2}
+                flex={1}
+                display={'flex'}
+                flexDirection={'column'}
+                alignItems={'center'}
+                justifyContent={'center'}
+                sx={{ paddingBottom: isMobile ? theme.spacing(14) : 2 }}
               >
-                <MenuItem value={'Single Choice'}>Single Choice</MenuItem>
-                <MenuItem value={'Multi Choice'}>Multi Choice</MenuItem>
-              </Select>
-            </FormControl>
-          </ListItem>
-          <ListItem>
-            <TextField
-              fullWidth
-              label='Duration (s)'
-              value={questionsLocal.length > 0 ? questionsLocal[focusItem].duration : 30}
-              onChange={handleDurationChange}
-              onBlur={handleDurationBlur}
-              {...durationTextState}
+                <TextField
+                  required
+                  label='Question'
+                  fullWidth
+                  sx={{ maxWidth: 1400 }}
+                  value={questionsLocal.length > 0 ? questionsLocal[focusItem].title : ''}
+                  onChange={handleQuestionTitleChange}
+                  onBlur={saveQuestion}
+                />
+                <Box
+                  sx={{ width: '90%' }}
+                  mt={4}
+                  mb={2}
+                >
+                  <Box sx={{ display: 'none' }}>
+                    <input
+                      type='file'
+                      ref={resourceUploadRef}
+                      onChange={onUploadFileChange}
+                    />
+                  </Box>
+                  <TextField
+                    label={'Resource'}
+                    fullWidth
+                    size='small'
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position='end'>
+                          <Button size='small' onClick={onClearResource}>Clear</Button>
+                          <Button size='small' onClick={openFileUploader}>Upload</Button>
+                        </InputAdornment>
+                      )
+                    }}
+                    value={resourceTextStatus.resource}
+                    onChange={onResourceInputChange}
+                    onBlur={onResourceInputBlur}
+                    error={resourceTextStatus.error}
+                    helperText={resourceTextStatus.helperText}
+                  >
+                  </TextField>
+                </Box>
+                {questionsLocal.length > 0 && questionsLocal[focusItem].resource.startsWith('https://youtu.be') &&
+                  (
+                    <YoutubePlayer videoId={questionsLocal[focusItem].resource.split('/').pop()} />
+                  )
+                }
+                {questionsLocal.length > 0 && questionsLocal[focusItem].resource.startsWith('https://www.youtube.com') &&
+                  (
+                    <YoutubePlayer videoId={questionsLocal[focusItem].resource.split('=').pop()} />
+                  )
+                }
+                {questionsLocal.length > 0 && questionsLocal[focusItem].resource.startsWith('data') &&
+                  (
+                    <ImageDisplay
+                      minWidth={240}
+                      maxWidth={600}
+                      src={questionsLocal[focusItem].resource}
+                      alt={'test'}
+                    />
+                  )
+                }
+                <Grid container mt={4} spacing={2} maxWidth={1400}>
+                  <Grid item xs={12} md={6} display={'flex'} alignItems='center' justifyContent={'center'}>
+                    <CheckTextField
+                      label={'A (Required)'}
+                      required={true}
+                      value={questionsLocal.length > 0 ? questionsLocal[focusItem].a : ''}
+                      onChange={handleQuestionAnswerAChange}
+                      onBlur={saveQuestion}
+                      name={'A'}
+                      onCheckBoxChange={handleQuestionCheckChange}
+                      checked={questionsLocal.length > 0 ? questionsLocal[focusItem].correct.includes('A') : false}
+                      checkBoxDisabled={questionsLocal.length > 0 ? questionsLocal[focusItem].a === '' : true}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={6} display={'flex'} alignItems='center' justifyContent={'center'}>
+                    <CheckTextField
+                      label={'B (Required)'}
+                      required={true}
+                      value={questionsLocal.length > 0 ? questionsLocal[focusItem].b : ''}
+                      onChange={handleQuestionAnswerBChange}
+                      onBlur={saveQuestion}
+                      name={'B'}
+                      onCheckBoxChange={handleQuestionCheckChange}
+                      checked={questionsLocal.length > 0 ? questionsLocal[focusItem].correct.includes('B') : false}
+                      checkBoxDisabled={questionsLocal.length > 0 ? questionsLocal[focusItem].b === '' : true}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={6} display={'flex'} alignItems='center' justifyContent={'center'}>
+                    <CheckTextField
+                      label={'C'}
+                      value={questionsLocal.length > 0 ? questionsLocal[focusItem].c : ''}
+                      onChange={handleQuestionAnswerCChange}
+                      onBlur={saveQuestion}
+                      name={'C'}
+                      onCheckBoxChange={handleQuestionCheckChange}
+                      checked={questionsLocal.length > 0 ? questionsLocal[focusItem].correct.includes('C') : false}
+                      checkBoxDisabled={questionsLocal.length > 0 ? questionsLocal[focusItem].c === '' : true}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={6} display={'flex'} alignItems='center' justifyContent={'center'}>
+                    <CheckTextField
+                      label={'D'}
+                      value={questionsLocal.length > 0 ? questionsLocal[focusItem].d : ''}
+                      onChange={handleQuestionAnswerDChange}
+                      onBlur={saveQuestion}
+                      name={'D'}
+                      onCheckBoxChange={handleQuestionCheckChange}
+                      checked={questionsLocal.length > 0 ? questionsLocal[focusItem].correct.includes('D') : false}
+                      checkBoxDisabled={questionsLocal.length > 0 ? questionsLocal[focusItem].d === '' : true}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={6} display={'flex'} alignItems='center' justifyContent={'center'}>
+                    <CheckTextField
+                      label={'E'}
+                      value={questionsLocal.length > 0 ? questionsLocal[focusItem].e : ''}
+                      onChange={handleQuestionAnswerEChange}
+                      onBlur={saveQuestion}
+                      name={'E'}
+                      onCheckBoxChange={handleQuestionCheckChange}
+                      checked={questionsLocal.length > 0 ? questionsLocal[focusItem].correct.includes('E') : false}
+                      checkBoxDisabled={questionsLocal.length > 0 ? questionsLocal[focusItem].e === '' : true}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={6} display={'flex'} alignItems='center' justifyContent={'center'}>
+                    <CheckTextField
+                      label={'F'}
+                      value={questionsLocal.length > 0 ? questionsLocal[focusItem].f : ''}
+                      onChange={handleQuestionAnswerFChange}
+                      onBlur={saveQuestion}
+                      name={'F'}
+                      onCheckBoxChange={handleQuestionCheckChange}
+                      checked={questionsLocal.length > 0 ? questionsLocal[focusItem].correct.includes('F') : false}
+                      checkBoxDisabled={questionsLocal.length > 0 ? questionsLocal[focusItem].f === '' : true}
+                    />
+                  </Grid>
+                </Grid>
+              </Grid>
+            </Grid>
+            <Fab
+              color='default'
+              size='small'
+              sx={{
+                position: 'fixed',
+                right: '0',
+                bottom: '50%',
+                transform: 'translateY(50%)',
+                borderRadius: '10px 0 0 10px',
+                width: 30,
+                height: 60
+              }}
+              onClick={openMarginDraw}
             >
-            </TextField>
-          </ListItem>
-          <ListItem>
-            <TextField
-              fullWidth
-              label='Points'
-              value={questionsLocal.length > 0 ? questionsLocal[focusItem].points : 10}
-              onChange={handlePointsChange}
-              onBlur={handlePointsBlur}
-              {...pointsTextState}
+              <ArrowBack>Add item</ArrowBack>
+            </Fab>
+            <Drawer
+            anchor='right'
+            open={marginDrawOpen}
+            onClose={onMarginDrawClose}
             >
-            </TextField>
-          </ListItem>
-          <ListItem>
-            <Divider />
-          </ListItem>
-          <ListItem>
-            <Button
-              variant='contained'
-              fullWidth
-              onClick={onFinishEditing}
-              color='success'
-            >
-              Finish Editing
-            </Button>
-          </ListItem>
-        </List>
-      </Drawer>
+              <List
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  height: '100%',
+                  overflow: 'auto',
+                  width: 250,
+                }}
+              >
+                <ListItem>
+                  <Typography>Game Setup</Typography>
+                </ListItem>
+                <ListItem>
+                  <TextField
+                    fullWidth
+                    label='Game Name'
+                    value={gameState.name}
+                    onChange={handleGameNameChange}
+                    onBlur={saveQuestion}
+                  >
+                  </TextField>
+                </ListItem>
+                <ListItem>
+                  <ImageDisplay minWidth={217} maxWidth={217} src={gameState.thumbnail === null ? '/assets/default-thumbnail.jpg' : gameState.thumbnail} alt={'thumbnail'} />
+                </ListItem>
+                <ListItem>
+                  <Divider />
+                </ListItem>
+                <ListItem>
+                  <Typography>Current Question Setup</Typography>
+                </ListItem>
+                <ListItem>
+                  <FormControl fullWidth>
+                    <InputLabel>Question Type</InputLabel>
+                    <Select
+                      value={questionsLocal.length > 0 ? questionsLocal[focusItem].type : ''}
+                      label="Question Type"
+                      onChange={handleGameTypeSelectorChange}
+                    >
+                      <MenuItem value={'Single Choice'}>Single Choice</MenuItem>
+                      <MenuItem value={'Multi Choice'}>Multi Choice</MenuItem>
+                    </Select>
+                  </FormControl>
+                </ListItem>
+                <ListItem>
+                  <TextField
+                    fullWidth
+                    label='Duration (s)'
+                    value={questionsLocal.length > 0 ? questionsLocal[focusItem].duration : 30}
+                    onChange={handleDurationChange}
+                    onBlur={handleDurationBlur}
+                    {...durationTextState}
+                  >
+                  </TextField>
+                </ListItem>
+                <ListItem>
+                  <TextField
+                    fullWidth
+                    label='Points'
+                    value={questionsLocal.length > 0 ? questionsLocal[focusItem].points : 10}
+                    onChange={handlePointsChange}
+                    onBlur={handlePointsBlur}
+                    {...pointsTextState}
+                  >
+                  </TextField>
+                </ListItem>
+                <ListItem>
+                  <Divider />
+                </ListItem>
+                <ListItem>
+                  <Button
+                    variant='contained'
+                    fullWidth
+                    onClick={onFinishEditing}
+                    color='success'
+                  >
+                    Finish Editing
+                  </Button>
+                </ListItem>
+              </List>
+            </Drawer>
+          </>
+        )
+      }
       <AlertDialog
         {...alertDialogState}
         onClose={onAlertDialogClose}

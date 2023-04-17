@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { TextField, InputAdornment, IconButton, Checkbox } from '@mui/material'
 
-export default function CheckTextField ({ label, required, value, onChange, onBlur, name, onCheckBoxChange, checked, checkBoxDisabled }) {
+export default function CheckTextField ({ label, required = false, value, onChange, onBlur, name, onCheckBoxChange, checked = false, checkBoxDisabled = false }) {
   return (
     <TextField
       sx={{ width: '90%' }}

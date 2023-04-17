@@ -27,6 +27,7 @@ function App () {
             <Route path='register' element={<Register />} />
 
             <Route path='editgame/:quizId' element={<EditGame />} />
+            <Route path='editgame/:quizId/:questionId' element={<EditGame />} />
 
             <Route path='gameresult' element={<GameResult />} />
 

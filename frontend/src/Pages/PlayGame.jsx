@@ -24,12 +24,15 @@ export default function PlayGame () {
   const [disabled, setDisabled] = useState(false)
   const [correctAnswer, setCorrectAnswer] = useState([])
 
+  const [points, setPoints] = useState([])
+
+  const lastQuestionTimeRef = useRef(null)
   // Check if the playerID is valid
   useEffect(() => {
     getQuizStatus()
     statusTimer.current = setInterval(() => {
       getQuizStatus()
-    }, 1000)
+    }, 100)
 
     return () => {
       if (statusTimer.current) {
@@ -37,6 +40,10 @@ export default function PlayGame () {
       }
     }
   }, [])
+
+  useEffect(() => {
+    console.log(points)
+  }, [points])
 
   const getQuizStatus = () => {
     fetch(`${HOST}${PLAY_GAME_URL}/${playerId}/status`, {
@@ -56,6 +63,7 @@ export default function PlayGame () {
       if (error.message === 'Player ID does not refer to valid player id') {
         navigate('/notfound/1002')
       } else if (error.message === 'Session ID is not an active session') {
+        getResult()
         setStarted('Finished')
         clearInterval(statusTimer.current)
         clearInterval(timer.current)
@@ -72,16 +80,15 @@ export default function PlayGame () {
       if (res.error != null) {
         throw new Error(res.error)
       }
-      setQuestion((prevQuestion) => {
-        if (prevQuestion === null || prevQuestion.isoTimeLastQuestionStarted !== res.question.isoTimeLastQuestionStarted) {
-          setAnswer([])
-          setCorrectAnswer([])
-          setDisabled(false)
-          startTimer(res.question.isoTimeLastQuestionStarted, res.question.duration)
-          return res.question
-        }
-        return prevQuestion
-      })
+      if (lastQuestionTimeRef.current === null || lastQuestionTimeRef.current !== res.question.isoTimeLastQuestionStarted) {
+        lastQuestionTimeRef.current = res.question.isoTimeLastQuestionStarted
+        setQuestion(res.question)
+        setAnswer([])
+        setCorrectAnswer([])
+        setDisabled(false)
+        startTimer(res.question.isoTimeLastQuestionStarted, res.question.duration)
+        setPoints((prevPoints) => [...prevPoints, res.question.points])
+      }
     }).catch(error => {
       if (error.message === 'Player ID does not refer to valid player id') {
         navigate('/notfound/1002')
@@ -145,9 +152,8 @@ export default function PlayGame () {
         setDisabled(true)
         setTimeout(() => {
           getCorrectAnswer()
-        })
+        }, 100)
       } else {
-        console.log(timeRemaining)
         setCountdown(Math.ceil(timeRemaining / 1000))
         setProgress((100 / (duration * 1000)) * timeRemaining)
       }
@@ -163,6 +169,20 @@ export default function PlayGame () {
         throw new Error(res.error)
       }
       setCorrectAnswer(res.answerIds)
+    }).catch(error => {
+      console.log(error.message)
+    })
+  }
+
+  const getResult = () => {
+    fetch(`${HOST}${PLAY_GAME_URL}/${playerId}/results`, {
+      method: 'GET',
+      headers: HEADER
+    }).then(res => res.json()).then(res => {
+      if (res.error != null) {
+        throw new Error(res.error)
+      }
+      console.log(res)
     }).catch(error => {
       console.log(error.message)
     })
@@ -332,6 +352,9 @@ export default function PlayGame () {
               </Typography>
               <Typography variant="h5" align='center' gutterBottom>
                 The game is finished
+              </Typography>
+              <Typography>
+                {points}
               </Typography>
             </>
           )
