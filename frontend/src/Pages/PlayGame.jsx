@@ -7,6 +7,20 @@ import CountDownProgress from '../Components/CountDownProgress';
 import YoutubePlayer from '../Components/YoutubePlayer';
 import ImageDisplay from '../Components/ImageDisplay';
 import ImageSlide from '../Components/ImageSlide';
+import TableBody from '@mui/material/TableBody';
+import PropTypes from 'prop-types';
+import Paper from '@mui/material/Paper';
+import TableContainer from '@mui/material/TableContainer';
+export function Title (props) {
+  return (
+      <Typography component="h2" variant="h6" color="primary" gutterBottom style={{ display: 'flex', justifyContent: 'center', textAlign: 'center', fontSize: '30px' }}>
+        {props.children}
+      </Typography>
+  );
+}
+Title.propTypes = {
+  children: PropTypes.node,
+};
 
 export default function PlayGame () {
   const playerId = useParams().playerId
@@ -26,6 +40,7 @@ export default function PlayGame () {
 
   const [points, setPoints] = useState([])
   const [durations, setDurations] = useState([])
+  const [items, setItems] = useState([])
 
   const lastQuestionTimeRef = useRef(null)
   // Check if the playerID is valid
@@ -184,12 +199,43 @@ export default function PlayGame () {
       if (res.error != null) {
         throw new Error(res.error)
       }
-      console.log(res)
+      setItems(res)
     }).catch(error => {
       console.log(error.message)
     })
   }
-
+  function table (durations, points, items) {
+    if (!items || items.length === 0) {
+      console.log('Error: items is empty or undefined');
+      return [];
+    }
+    if (!points || points.length === 0) {
+      console.log('Error: point is empty or undefined');
+      return [];
+    }
+    if (!durations || durations.length === 0) {
+      console.log('Error: durations is empty or undefined');
+      return [];
+    }
+    const Time = [];
+    const numQuestions = items.length;
+    const totalscore = []
+    for (let questionId = 0; questionId < numQuestions; questionId++) {
+      Time.push(questionId - questionId)
+    }
+    for (let questionId = 0; questionId < numQuestions; questionId++) {
+      totalscore.push(questionId - questionId)
+    }
+    for (let answerId = 0; answerId < numQuestions; answerId++) {
+      Time[answerId] += ((new Date(items[answerId].answeredAt).getTime() / 1000) - (new Date(items[answerId].questionStartedAt).getTime() / 1000));
+      if (items[answerId].correct === true) {
+        totalscore[answerId] += (1 - ((new Date(items[answerId].answeredAt).getTime() / 1000) - (new Date(items[answerId].questionStartedAt).getTime() / 1000)) / durations[answerId]) * points[answerId];
+      }
+    }
+    const questionScores = Time.map((time, index) => [time, totalscore[index]]);
+    return questionScores
+  }
+  console.log(table(durations, points, items))
   return (
     <Container maxWidth='xl' sx={{
       overflow: 'auto',
@@ -349,28 +395,31 @@ export default function PlayGame () {
         {started === 'Finished' &&
           (
             <>
-              <Typography variant="h5" align='center' gutterBottom>
-                {`Your player ID is ${playerId}.`}
-              </Typography>
-              <Typography variant="h5" align='center' gutterBottom>
-                The game is finished
-              </Typography>
-              <Typography>
-                {points}
-              </Typography>
-              <Typography>
-                {durations}
-              </Typography>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>A</TableCell>
-                    <TableCell>B</TableCell>
-                    <TableCell>C</TableCell>
-                  </TableRow>
-                </TableHead>
-              </Table>
-            </>
+          <TableContainer component={Paper}>
+          <Title>Game Results</Title>
+          <Table sx={{ minWidth: 650 }} aria-label="simple table">
+          <TableHead>
+              <TableRow>
+                <TableCell>Question</TableCell>
+                <TableCell>Time</TableCell>
+                <TableCell>Score</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {table(durations, points, items).map((row, index) => (
+                <TableRow key={index}>
+                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>{row[0].toFixed(2)}</TableCell>
+                  <TableCell>{row[1].toFixed(2)}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          </TableContainer>
+          <Typography component="h2" variant="h6" gutterBottom style={{ marginTop: '5%', fontSize: '12px', textAlign: 'left' }}>
+              Score Calculation Formula: (Remaining answer time/each question total time)*each question total score
+          </Typography>
+          </>
           )
         }
       </Box>

@@ -6,7 +6,7 @@ import { GET_SESSION_URL, HOST, getAuthHeader, GET_GAME_URL } from '../utils/uti
 import CountDownProgress from '../Components/CountDownProgress';
 import StopIcon from '@mui/icons-material/Stop';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-
+import DashboardContent from '../Pages/GameResult';
 export default function Admin () {
   const navigate = useNavigate()
   const sessionId = useParams().sessionId
@@ -176,17 +176,7 @@ export default function Admin () {
               </IconButton>)}
           </Paper>
         </Box>)
-        : (<Box
-            flexDirection='column'
-            alignItems='center'
-            justifyContent='center'
-            minHeight='calc(100vh - var(--nav-h))'
-            display={sessionState && !sessionState.active ? 'flex' : 'none'}
-          >
-            <Typography variant="h5" align='center' gutterBottom>
-              {'The session has been finished'}
-            </Typography>
-          </Box>)}
+        : (<DashboardContent sessionId={sessionId} quizId={quizId}/>)}
       <AlertDialog
         {...alertDialogState}
         onClose={() => setAlertDialogState({ ...alertDialogState, open: false })}
