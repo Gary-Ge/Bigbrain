@@ -12,7 +12,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
-import { removeToken, getToken } from '../utils/utils';
+import { removeToken, getToken, HOST, LOG_OUT_URL, getAuthHeader } from '../utils/utils';
 
 function Navbar () {
   const [pages, setPages] = useState(['Products', 'Pricing', 'Register', getToken() ? 'Login' : 'Logout'])
@@ -44,6 +44,20 @@ function Navbar () {
 
   const updateLoginStatus = () => {
     setPages(getToken() ? ['Dashboard', 'Join', 'Register', 'Logout'] : ['Dashboard', 'Join', 'Register', 'Login'])
+  }
+
+  const logout = () => {
+    fetch(`${HOST}${LOG_OUT_URL}`, {
+      method: 'POST',
+      headers: getAuthHeader(),
+    }).then(res => res.json()).then(res => {
+      if (res.error != null) {
+        throw new Error(res.error)
+      }
+      removeToken()
+    }).catch(error => {
+      console.log(error.message)
+    })
   }
 
   return (
@@ -99,7 +113,7 @@ function Navbar () {
             >
               {pages.map((page) => (
                 <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Link href={page === 'Login' || page === 'Logout' ? 'login' : `/${page.toLowerCase()}`} sx={{ textDecoration: 'none' }} onClick={page === 'Logout' ? removeToken : null}>
+                  <Link href={page === 'Login' || page === 'Logout' ? 'login' : `/${page.toLowerCase()}`} sx={{ textDecoration: 'none' }} onClick={page === 'Logout' ? logout : null}>
                     <Typography textAlign="center">{page}</Typography>
                   </Link>
                 </MenuItem>
@@ -126,7 +140,7 @@ function Navbar () {
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', lg: 'flex' } }}>
             {pages.map((page) => (
-              <Link href={page === 'Login' || page === 'Logout' ? 'login' : `/${page.toLowerCase()}`} key={page} sx={{ textDecoration: 'none' }} onClick={page === 'Logout' ? removeToken : null}>
+              <Link href={page === 'Login' || page === 'Logout' ? 'login' : `/${page.toLowerCase()}`} key={page} sx={{ textDecoration: 'none' }} onClick={page === 'Logout' ? logout : null}>
                 <Button
                   key={page}
                   onClick={handleCloseNavMenu}

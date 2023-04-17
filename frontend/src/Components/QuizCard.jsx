@@ -244,7 +244,7 @@ export default function QuizCard ({ image, title, quizId, onDeleteSuccess }) {
       >
       </CardMedia>
       <CardContent sx={{ pb: 0, pt: 1, flexGrow: 1 }}>
-        <Typography component='h4' variant='h5' sx={{ wordWrap: 'break-word', overflowWrap: 'break-word', }}>
+        <Typography component='h4' variant='h5' sx={{ wordWrap: 'break-word', overflowWrap: 'break-word' }}>
           {title}
         </Typography>
         <Typography component='p' color='GrayText'>
