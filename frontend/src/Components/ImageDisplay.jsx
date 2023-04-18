@@ -13,6 +13,7 @@ export default function ImageDisplay ({ minWidth, maxWidth, src, alt, onClick })
         cursor: 'pointer'
       }}
       onClick={onClick}
+      data-testid="image-display-box"
     >
       <Paper elevation={3} sx={{ width: '100%', height: '100%', overflow: 'hidden' }}>
         <Box
