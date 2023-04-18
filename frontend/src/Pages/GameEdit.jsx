@@ -635,7 +635,7 @@ export default function EditGame () {
                 >
                 </TextField>
                 <ImageDisplay minWidth={260} maxWidth={600} src={gameState.thumbnail === null || gameState.thumbnail === '' ? '/assets/default-thumbnail.jpg' : gameState.thumbnail} alt={'Thumbnail'}/>
-                <Button variant='contained' color='success' sx={{
+                <Button variant='contained' color='success' onClick={onFinishEditing} sx={{
                   marginTop: 3
                 }}>Finish Editing</Button>
               </Grid>
