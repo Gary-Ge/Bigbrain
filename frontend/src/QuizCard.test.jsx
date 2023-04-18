@@ -1,9 +1,9 @@
 import React from 'react';
 import { mount } from 'enzyme'
 import QuizCard from './Components/QuizCard'
-import { CardMedia, Typography, Menu, IconButton } from '@mui/material';
-import { BrowserRouter } from 'react-router-dom';
-import { act } from 'react-dom/test-utils';
+import { CardMedia, Typography, Menu, IconButton } from '@mui/material'
+import { BrowserRouter } from 'react-router-dom'
+import { act } from 'react-dom/test-utils'
 
 describe('QuizCard', () => {
   let wrapper
