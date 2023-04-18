@@ -545,6 +545,7 @@ export default function EditGame () {
                   }}
                   variant='contained'
                   onClick={createQuestion}
+                  data-testid='add-question-large'
                 >
                   <Add />
                 </Button>
@@ -864,9 +865,10 @@ export default function EditGame () {
                       value={questionsLocal.length > 0 ? questionsLocal[focusItem].type : ''}
                       label="Question Type"
                       onChange={handleGameTypeSelectorChange}
+                      data-testid='game-type-selector'
                     >
                       <MenuItem value={'Single Choice'}>Single Choice</MenuItem>
-                      <MenuItem value={'Multi Choice'}>Multi Choice</MenuItem>
+                      <MenuItem value={'Multi Choice'} data-testid='test-multi-choice'>Multi Choice</MenuItem>
                     </Select>
                   </FormControl>
                 </ListItem>
@@ -878,6 +880,7 @@ export default function EditGame () {
                     onChange={handleDurationChange}
                     onBlur={handleDurationBlur}
                     {...durationTextState}
+                    data-testid='test-duration'
                   >
                   </TextField>
                 </ListItem>
@@ -889,6 +892,7 @@ export default function EditGame () {
                     onChange={handlePointsChange}
                     onBlur={handlePointsBlur}
                     {...pointsTextState}
+                    data-testid='test-points'
                   >
                   </TextField>
                 </ListItem>

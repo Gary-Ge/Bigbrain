@@ -6,3 +6,7 @@ When editing the game, all the modifications you did would be auto saved after y
 For most of the editable field, we provided input check and prompt text to tell you what kind of format/value/text is acceptable, make your editing more easily.
 ### 4. Game Check
 When you want to finish editing or start a game, we will perform a game check to ensure that the game is valid. We will check if all the required field is finished. The game cannot be started if it is incompleted, preventing you from starting a half-finished game.
+
+### 5. Fold and Unfold Menu
+
+Foldable menu are widely used in this project, to make the page more suitable and there would not be too many buttons on an element. (e.g. For the quiz card, there are 6 buttons available to control the quiz, but normally you can only see the start button, since all the other buttons are folded and they would only be visible by clicking the menu button, or when the quiz is started)

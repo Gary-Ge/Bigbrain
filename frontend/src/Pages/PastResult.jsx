@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { GET_GAME_URL, HOST, getAuthHeader } from '../utils/utils';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Container, Grid } from '@mui/material';
+import { Box, Paper } from '@mui/material';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
-import Paper from '@mui/material/Paper';
 
 export default function PastResult () {
   const [items, setItems] = useState([]);
@@ -35,11 +34,11 @@ export default function PastResult () {
     return (
       <List sx={{
         width: '100%',
-        height: 400,
         maxWidth: 360,
         bgcolor: 'background.paper',
         margin: 'auto',
         display: 'block',
+        overflow: 'auto'
       }} >
           {items.map((row, index) => (
         <ListItemButton key={row} onClick={() => navigate(`/admin/${quizId}/${row}`)} sx={{ textAlign: 'center' }}>
@@ -50,12 +49,11 @@ export default function PastResult () {
     );
   }
   return (
-    <Container maxWidth="lg" sx={{ mt: 6, mb: 6 }} >
-    <Grid item xs={12}>
-    <Paper sx={{ p: 15, display: 'flex', flexDirection: 'column', backgroundColor: 'rgb(226, 230, 235)' }}>
-    {renderRow(items)}
-    </Paper>
-    </Grid>
-    </Container>
+    <Box maxWidth="100%" sx={{ p: 3, overflow: 'auto', maxHeight: 'calc(100vh - var(--nav-h))' }} >
+      <Paper sx={{ p: 3, display: 'flex', flexDirection: 'column', backgroundColor: 'rgb(226, 230, 235)', overflow: 'auto' }}>
+        {renderRow(items)}
+      </Paper>
+    </Box>
+
   )
 }

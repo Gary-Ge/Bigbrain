@@ -160,6 +160,7 @@ export default function Admin () {
                 width: '5rem',
                 height: '5rem'
               }}
+              data-testid='test-stop'
               onClick={endSession}
             >
               <StopIcon fontSize='5rem'/>
@@ -171,6 +172,7 @@ export default function Admin () {
                   height: '2.5rem'
                 }}
                 onClick={advance}
+                data-testid='test-advance'
               >
                 <ArrowForwardIosIcon/>
               </IconButton>)}
