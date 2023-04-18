@@ -4,6 +4,7 @@ import { TextField, InputAdornment, IconButton, Checkbox } from '@mui/material'
 export default function CheckTextField ({ label, required = false, value, onChange, onBlur, name, onCheckBoxChange, checked = false, checkBoxDisabled = false }) {
   return (
     <TextField
+      data-testid={`textfield-${name}`}
       sx={{ width: '90%' }}
       label={label}
       required={required}
@@ -17,6 +18,7 @@ export default function CheckTextField ({ label, required = false, value, onChan
                 name={name}
                 checked={checked}
                 disabled={checkBoxDisabled}
+                data-testid={`checkbox-${name}`}
               />
             </IconButton>
           </InputAdornment>

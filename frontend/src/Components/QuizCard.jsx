@@ -278,7 +278,7 @@ export default function QuizCard ({ image, title, quizId, onDeleteSuccess }) {
           <MenuItem onClick={() => {
             toEdit()
             closeMoreButtonMenu()
-          }}>Edit</MenuItem>
+          }} data-testid="edit-menu-item">Edit</MenuItem>
           <MenuItem onClick={() => {
             openDeleteConfirmDialog()
             closeMoreButtonMenu()

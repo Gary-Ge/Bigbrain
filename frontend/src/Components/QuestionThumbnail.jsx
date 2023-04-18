@@ -30,6 +30,7 @@ export default function QuestionThumbnail ({ text, width, height, focused, onCli
       }}
       button={!isMouseOnIcon}
       onClick={onClick}
+      data-testid="question-thumbnail"
     >
       <Typography
         sx={{

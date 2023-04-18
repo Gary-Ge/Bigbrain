@@ -18,7 +18,7 @@ export default function AddCard ({ onSubmitSuccess }) {
 
   return (
     <Card sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <CardActionArea sx={{ height: '100%' }} onClick={openInputDialog}>
+      <CardActionArea sx={{ height: '100%' }} onClick={openInputDialog} data-testid='add-card-action-area'>
         <CardMedia
           sx={{
             minHeight: 200,

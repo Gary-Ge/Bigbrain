@@ -599,6 +599,7 @@ export default function EditGame () {
                   onChange={handleGameNameChange}
                   onBlur={handleGameNameBlur}
                   {...gameNameTextStatus}
+                  data-testid="game-name-test"
                 />
                 <Box sx={{ display: 'none' }}>
                   <input
@@ -686,6 +687,7 @@ export default function EditGame () {
                   value={questionsLocal.length > 0 ? questionsLocal[focusItem].title : ''}
                   onChange={handleQuestionTitleChange}
                   onBlur={saveQuestion}
+                  data-testid="question-title"
                 />
                 <Box
                   sx={{ width: '90%' }}
@@ -829,6 +831,7 @@ export default function EditGame () {
                 width: 30,
                 height: 60
               }}
+              data-testid='fab'
               onClick={openMarginDraw}
             >
               <ArrowBack>Add item</ArrowBack>
