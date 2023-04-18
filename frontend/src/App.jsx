@@ -31,7 +31,7 @@ function App () {
             <Route path='editgame/:quizId/:questionId' element={<EditGame />} />
 
             <Route path='gameresult' element={<GameResult />} />
-            <Route path='pastresult' element={<PastResult />} />
+            <Route path='pastresult/:quizId' element={<PastResult />} />
 
             <Route path='join' element={<Join />} />
             <Route path='join/:sessionId' element={<Join withSessionId={true}/>} />

@@ -235,7 +235,9 @@ export default function QuizCard ({ image, title, quizId, onDeleteSuccess }) {
   const toResult = () => {
     navigate(`/admin/${quizId}/${sessionId}`)
   }
-
+  const toPastResult = () => {
+    navigate(`/pastresult/${quizId}`)
+  }
   return (
     <Card sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <CardMedia
@@ -281,6 +283,10 @@ export default function QuizCard ({ image, title, quizId, onDeleteSuccess }) {
             openDeleteConfirmDialog()
             closeMoreButtonMenu()
           }}>Delete</MenuItem>
+          <MenuItem onClick={() => {
+            toPastResult()
+            closeMoreButtonMenu()
+          }}>Result</MenuItem>
         </Menu>
       </CardActions>
       <AlertDialog
